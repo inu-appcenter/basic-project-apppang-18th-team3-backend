@@ -43,8 +43,10 @@ jobs:
             pkill -f 'java -jar' || true
             sleep 3
             JAR=$(ls -t /home/ubuntu/app/*.jar | head -n 1)
-            nohup java -jar $JAR \
+            setsid nohup java -jar "$JAR" \
               --spring.datasource.url='${{ secrets.DB_URL }}' \
               --spring.datasource.username='${{ secrets.DB_USERNAME }}' \
               --spring.datasource.password='${{ secrets.DB_PASSWORD }}' \
-              > /home/ubuntu/app/app.log 2>&1 &
+              > /home/ubuntu/app/app.log 2>&1 < /dev/null &
+            sleep 2
+            echo "deploy done"
