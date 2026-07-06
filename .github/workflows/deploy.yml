@@ -29,6 +29,18 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
+      # SSH 연결 테스트 추가
+      - name: Test SSH Connection
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST_WC }}
+          username: ${{ secrets.EC2_USER_WC }}
+          key: ${{ secrets.EC2_SSH_KEY_WC }}
+          script: |
+            echo "SSH Connection Success"
+            hostname
+            whoami
+
       # 5. EC2로 JAR 전송
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@v0.1.7
