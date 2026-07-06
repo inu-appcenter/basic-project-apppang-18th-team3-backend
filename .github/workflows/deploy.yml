@@ -1,45 +1,61 @@
-name: Deploy to EC2
+name: Deploy to EC2 (WC TEST)
 
 on:
   push:
-    branches: [ main ]     # main 브랜치에 push하면 실행
+    branches:
+      - test-deploy-WC
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: 코드 가져오기
+      # 1. 코드 가져오기
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: JDK 21 설정
+      # 2. Java 21 설정
+      - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '21'
 
-      - name: gradlew 실행 권한
-        run: chmod +x ./gradlew
+      # 3. 빌드 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-      - name: 빌드(jar 생성)
-        run: ./gradlew bootJar
+      # 4. 빌드
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
 
-      - name: jar 파일을 EC2로 전송
+      # 5. EC2로 JAR 전송
+      - name: Copy JAR to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.EC2_HOST_WC }}
+          username: ${{ secrets.EC2_USER_WC }}
+          key: ${{ secrets.EC2_SSH_KEY_WC }}
           source: "build/libs/*.jar"
           target: "/home/ubuntu/app"
-          strip_components: 2
 
-      - name: EC2에서 앱 재시작
-        uses: appleboy/ssh-action@v1.0.3
+      # 6. EC2에서 앱 재시작
+      - name: Restart App on EC2
+        uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.EC2_HOST_WC }}
+          username: ${{ secrets.EC2_USER_WC }}
+          key: ${{ secrets.EC2_SSH_KEY_WC }}
           script: |
-            JAR=$(ls -t /home/ubuntu/app/apppang-*.jar | head -n 1)
+            echo "Stopping old app..."
+            sudo systemctl stop appang || true
+
+            echo "Deploying new jar..."
+            JAR=$(ls -t /home/ubuntu/app/*.jar | head -n 1)
             cp "$JAR" /home/ubuntu/app/app.jar
-            sudo systemctl restart appang
+
+            echo "Starting app..."
+            sudo systemctl start appang
+
+            echo "Status check"
+            sudo systemctl status appang --no-pager
