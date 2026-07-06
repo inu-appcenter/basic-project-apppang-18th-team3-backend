@@ -29,7 +29,7 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -x test
 
-      # SSH 연결 테스트 추가
+      # SSH 연결 테스트
       - name: Test SSH Connection
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -62,8 +62,17 @@ jobs:
             echo "Stopping old app..."
             sudo systemctl stop appang || true
 
+            echo "Checking uploaded files..."
+            find /home/ubuntu/app -name "*.jar"
+
             echo "Deploying new jar..."
-            JAR=$(ls -t /home/ubuntu/app/*.jar | head -n 1)
+            JAR=$(find /home/ubuntu/app/build/libs -name "*.jar" ! -name "*plain.jar" | head -n 1)
+
+            if [ -z "$JAR" ]; then
+              echo "ERROR: JAR file not found!"
+              exit 1
+            fi
+
             cp "$JAR" /home/ubuntu/app/app.jar
 
             echo "Starting app..."
