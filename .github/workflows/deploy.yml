@@ -2,8 +2,8 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ main ]     # main 브랜치에 push하면 실행
-
+    branches: [ main ]
+  workflow_dispatch:
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -23,23 +23,35 @@ jobs:
       - name: 빌드(jar 생성)
         run: ./gradlew bootJar
 
-      - name: jar 파일을 EC2로 전송
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker 이미지 빌드 및 push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: eatyummydance200/apppang3-backend:latest
+
+      - name: docker-compose.yml + Caddyfile EC2로 복사
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "build/libs/*.jar"
+          source: "docker-compose.yml,Caddyfile"
           target: "/home/ubuntu/app"
-          strip_components: 2
 
-      - name: EC2에서 앱 재시작
+      - name: EC2에서 이미지 pull + 재시작
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            JAR=$(ls -t /home/ubuntu/app/apppang-*.jar | head -n 1)
-            cp "$JAR" /home/ubuntu/app/app.jar
-            sudo systemctl restart appang
+            cd /home/ubuntu/app
+            docker compose pull
+            docker compose up -d
