@@ -1,9 +1,8 @@
 package shop.apppang.domain.product.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import shop.apppang.domain.product.dto.ProductDetailResponse;
 import shop.apppang.domain.product.dto.ProductListResponse;
 import shop.apppang.domain.product.service.ProductService;
 
@@ -19,6 +18,16 @@ public class ProductController {
     public ProductListResponse getProducts() {
 
         return productService.getProducts();
+
+    }
+
+    // 상품 상세 조회
+    @GetMapping("/{productId}")
+    public ProductDetailResponse getProduct(
+            @PathVariable Long productId
+    ) {
+
+        return productService.getProduct(productId);
 
     }
 
