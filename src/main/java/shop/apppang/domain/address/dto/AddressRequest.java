@@ -1,4 +1,4 @@
-package kr.inuappcenter.apppang.domain.address.dto;
+package shop.apppang.domain.address.dto;
 
 public record AddressRequest(
         String recipientName,
