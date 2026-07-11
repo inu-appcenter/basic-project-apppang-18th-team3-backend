@@ -1,5 +1,6 @@
 package shop.apppang.global.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,22 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(message));
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException e) {
+        String message = e.getConstraintViolations()
+                .iterator()
+                .next()
+                .getMessage();
+
+        return ResponseEntity
+                .badRequest() // 400
+                .body(new ErrorResponse(message));
+    }
+
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ErrorMessage> handleInvalidCredentials(InvalidCredentialsException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED) // 401
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED) // 401
                 .body(new ErrorMessage(e.getMessage()));
     }
 

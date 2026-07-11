@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.apppang.domain.auth.dto.request.LoginRequest;
 import shop.apppang.domain.auth.dto.request.SignupRequest;
+import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.exception.DuplicateEmailException;
@@ -64,6 +65,14 @@ public class AuthService {
                         .userId(user.getId())
                         .name(user.getName())
                         .build())
+                .build();
+    }
+
+    public EmailCheckResponse checkEmailAvailable(String email) {
+        boolean exists = userRepository.existsByEmail(email);
+
+        return EmailCheckResponse.builder()
+                .available(!exists)
                 .build();
     }
 }
