@@ -1,8 +1,8 @@
-package kr.inuappcenter.apppang.domain.address.controller;
+package shop.apppang.domain.address.controller;
 
-import kr.inuappcenter.apppang.domain.address.dto.AddressRequest;
-import kr.inuappcenter.apppang.domain.address.dto.AddressResponse;
-import kr.inuappcenter.apppang.domain.address.service.AddressService;
+import shop.apppang.domain.address.dto.AddressRequest;
+import shop.apppang.domain.address.dto.AddressResponse;
+import shop.apppang.domain.address.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

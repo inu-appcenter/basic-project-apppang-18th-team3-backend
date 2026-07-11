@@ -1,6 +1,6 @@
-package kr.inuappcenter.apppang.domain.address.dto;
+package shop.apppang.domain.address.dto;
 
-import kr.inuappcenter.apppang.domain.address.entity.Address;
+import shop.apppang.domain.address.entity.AddressEntity;
 
 public record AddressResponse(
         Long addressId,
@@ -14,7 +14,7 @@ public record AddressResponse(
         Boolean isDefault
 ) {
     // 엔티티 → 응답 DTO 변환
-    public static AddressResponse from(Address a) {
+    public static AddressResponse from(AddressEntity a) {
         return new AddressResponse(
                 a.getId(), a.getRecipientName(), a.getPhone(), a.getZipcode(),
                 a.getAddress(), a.getDetailAddress(),
