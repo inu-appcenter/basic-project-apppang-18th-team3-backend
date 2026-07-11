@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-public class UserEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,7 +39,7 @@ public class UserEntity {
     private LocalDateTime createdAt;
 
     @Builder
-    public UserEntity(String email, String password, String name, String phoneNumber, Long appMoney) {
+    public User(String email, String password, String name, String phoneNumber, Long appMoney) {
         this.email = email;
         this.password = password;
         this.name = name;
