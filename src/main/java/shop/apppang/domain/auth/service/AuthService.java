@@ -5,16 +5,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import shop.apppang.domain.auth.dto.request.FindEmailRequest;
 import shop.apppang.domain.auth.dto.request.LoginRequest;
 import shop.apppang.domain.auth.dto.request.SignupRequest;
 import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
+import shop.apppang.domain.auth.dto.response.FindEmailResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.exception.DuplicateEmailException;
 import shop.apppang.domain.auth.exception.InvalidCredentialsException;
+import shop.apppang.domain.auth.exception.MemberNotFoundException;
+import shop.apppang.domain.auth.util.EmailMaskingUtil;
 import shop.apppang.domain.user.entity.User;
 import shop.apppang.domain.user.repository.UserRepository;
 import shop.apppang.global.jwt.JwtTokenProvider;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +79,27 @@ public class AuthService {
 
         return EmailCheckResponse.builder()
                 .available(!exists)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public FindEmailResponse findEmail(FindEmailRequest request) {
+
+        List<User> users = userRepository.findByNameAndPhoneNumber(
+                request.getName(),
+                request.getPhoneNumber()
+        );
+
+        if (users.isEmpty()) {
+            throw new MemberNotFoundException("일치하는 회원 정보를 찾을 수 없습니다.");
+        }
+
+        List<String> maskedEmails = users.stream()
+                .map(user -> EmailMaskingUtil.mask(user.getEmail()))
+                .toList();
+
+        return FindEmailResponse.builder()
+                .emails(maskedEmails)
                 .build();
     }
 }

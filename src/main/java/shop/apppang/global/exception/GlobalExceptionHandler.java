@@ -1,7 +1,6 @@
 package shop.apppang.global.exception;
 
 import jakarta.validation.ConstraintViolationException;
-import org.springdoc.api.ErrorMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -9,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import shop.apppang.domain.auth.exception.InvalidCredentialsException;
+import shop.apppang.domain.auth.exception.MemberNotFoundException;
 
 import java.util.Optional;
 
@@ -17,7 +17,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException e) {
-        String message = Optional.ofNullable(e.getBindingResult().getFieldError())
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .findFirst()
                 .map(FieldError::getDefaultMessage)
                 .orElse("잘못된 요청입니다.");
 
@@ -39,10 +40,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ErrorMessage> handleInvalidCredentials(InvalidCredentialsException e) {
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException e) {
+
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED) // 401
-                .body(new ErrorMessage(e.getMessage()));
+                .body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleMemberNotFound(MemberNotFoundException e){
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

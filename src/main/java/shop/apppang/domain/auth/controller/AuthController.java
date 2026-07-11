@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import shop.apppang.domain.auth.dto.request.FindEmailRequest;
 import shop.apppang.domain.auth.dto.request.LoginRequest;
 import shop.apppang.domain.auth.dto.request.SignupRequest;
 import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
+import shop.apppang.domain.auth.dto.response.FindEmailResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.service.AuthService;
@@ -36,7 +38,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+
         LoginResponse response = authService.login(request);
+
         return ResponseEntity.ok(response);
     }
 
@@ -48,5 +52,13 @@ public class AuthController {
             String email) {
 
         return ResponseEntity.ok(authService.checkEmailAvailable(email));
+    }
+
+    @PostMapping("/find-email")
+    public ResponseEntity<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest request) {
+
+        FindEmailResponse response = authService.findEmail(request);
+
+        return ResponseEntity.ok(response);
     }
 }
