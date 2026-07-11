@@ -32,5 +32,4 @@ public class SignupRequest {
     @AssertTrue(message = "필수 약관에 동의해주세요")
     private boolean agreedRequiredTerms;
 
-    private boolean agreedMarketing;
 }
