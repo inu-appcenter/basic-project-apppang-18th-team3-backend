@@ -15,7 +15,31 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
+    private static final String RESET_TOKEN_PREFIX = "tmp_";
+
     private final JwtProperties jwtProperties;
+
+    public String generateResetToken(Long userId) {
+        try {
+            Date now = new Date();
+            Date expiration = new Date(now.getTime() + jwtProperties.getResetTokenExpiration());
+
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .subject(String.valueOf(userId))
+                    .claim("purpose", "password-reset")
+                    .issueTime(now)
+                    .expirationTime(expiration)
+                    .build();
+
+            JWSHeader header = new JWSHeader(JWSAlgorithm.HS256);
+            SignedJWT signedJWT = new SignedJWT(header, claimsSet);
+            signedJWT.sign(new MACSigner(jwtProperties.getSecret().getBytes()));
+
+            return RESET_TOKEN_PREFIX + signedJWT.serialize();
+        } catch (JOSEException e){
+            throw new IllegalStateException("JWT 서명에 실패했습니다.", e);
+        }
+    }
 
     public String generateAccessToken(Long userId, String email){
         try{

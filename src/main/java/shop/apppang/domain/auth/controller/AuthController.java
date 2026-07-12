@@ -11,10 +11,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.auth.dto.request.FindEmailRequest;
 import shop.apppang.domain.auth.dto.request.LoginRequest;
+import shop.apppang.domain.auth.dto.request.PasswordResetVerifyRequest;
 import shop.apppang.domain.auth.dto.request.SignupRequest;
 import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
 import shop.apppang.domain.auth.dto.response.FindEmailResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
+import shop.apppang.domain.auth.dto.response.PasswordResetVerifyResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.service.AuthService;
 
@@ -58,6 +60,14 @@ public class AuthController {
     public ResponseEntity<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest request) {
 
         FindEmailResponse response = authService.findEmail(request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/password-reset-verify")
+    public ResponseEntity<PasswordResetVerifyResponse> verifyPasswordReset(@Valid @RequestBody PasswordResetVerifyRequest request) {
+
+        PasswordResetVerifyResponse response = authService.verifyForPasswordReset(request);
 
         return ResponseEntity.ok(response);
     }

@@ -1,3 +1,4 @@
 jwt:
   secret: ${JWT_SECRET:change-this-to-a-real-secret-at-least-32-bytes-long-for-hs256}
   access-token-expiration: 1800000 #30분
+  reset-token-expiration: 900000 #15분

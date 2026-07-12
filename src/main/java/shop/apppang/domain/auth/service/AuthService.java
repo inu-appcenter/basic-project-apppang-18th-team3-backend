@@ -7,10 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.apppang.domain.auth.dto.request.FindEmailRequest;
 import shop.apppang.domain.auth.dto.request.LoginRequest;
+import shop.apppang.domain.auth.dto.request.PasswordResetVerifyRequest;
 import shop.apppang.domain.auth.dto.request.SignupRequest;
 import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
 import shop.apppang.domain.auth.dto.response.FindEmailResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
+import shop.apppang.domain.auth.dto.response.PasswordResetVerifyResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.exception.DuplicateEmailException;
 import shop.apppang.domain.auth.exception.InvalidCredentialsException;
@@ -100,6 +102,22 @@ public class AuthService {
 
         return FindEmailResponse.builder()
                 .emails(maskedEmails)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public PasswordResetVerifyResponse verifyForPasswordReset(PasswordResetVerifyRequest request) {
+
+        User user = userRepository.findByEmailAndNameAndPhoneNumber(
+                request.getEmail(),
+                request.getName(),
+                request.getPhoneNumber()
+        ).orElseThrow(() -> new MemberNotFoundException("일치하는 회원 정보를 찾을 수 없습니다."));
+
+        String resetToken = jwtTokenProvider.generateResetToken(user.getId());
+
+        return PasswordResetVerifyResponse.builder()
+                .resetToken(resetToken)
                 .build();
     }
 }
