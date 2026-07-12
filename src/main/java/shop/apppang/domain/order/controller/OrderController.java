@@ -2,6 +2,7 @@ package shop.apppang.domain.order.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.order.dto.*;
 import shop.apppang.domain.order.service.OrderService;
@@ -16,19 +17,19 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderCreateResponse> createOrder(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal Long userId,
             @RequestBody OrderCreateRequest request) {
         return ResponseEntity.status(201).body(orderService.createOrder(userId, request));
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderSummaryResponse>> getOrders(@RequestParam Long userId) {
+    public ResponseEntity<List<OrderSummaryResponse>> getOrders(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(orderService.getOrders(userId));
     }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderDetailResponse> getOrderDetail(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal Long userId,
             @PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.getOrderDetail(userId, orderId));
     }
@@ -40,7 +41,7 @@ public class OrderController {
 
     @PostMapping("/{orderId}/cancel")
     public ResponseEntity<OrderCancelResponse> cancelOrder(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal Long userId,
             @PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.cancelOrder(userId, orderId));
     }

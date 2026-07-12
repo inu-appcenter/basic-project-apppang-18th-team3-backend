@@ -13,7 +13,7 @@ import shop.apppang.domain.order.entity.OrderItemEntity;
 import shop.apppang.domain.order.repository.OrderItemRepository;
 import shop.apppang.domain.order.repository.OrderRepository;
 import shop.apppang.domain.product.entity.ProductEntity;
-import shop.apppang.domain.user.entity.UserEntity;
+import shop.apppang.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +61,7 @@ public class OrderService {
         long totalPrice = productAmount - discountAmount + shippingFee;
 
         // 앱팡 머니 확인 + 차감
-        UserEntity user = em.find(UserEntity.class, userId);
+        User user = em.find(User.class, userId);
         if (user == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다");
         if (user.getAppMoney() < totalPrice)
