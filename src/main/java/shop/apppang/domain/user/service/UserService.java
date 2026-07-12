@@ -1,15 +1,19 @@
 package shop.apppang.domain.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import shop.apppang.domain.auth.exception.DuplicateEmailException;
 import shop.apppang.domain.auth.exception.MemberNotFoundException;
+import shop.apppang.domain.user.dto.request.ChangePasswordRequest;
 import shop.apppang.domain.user.dto.request.UpdateUserRequest;
+import shop.apppang.domain.user.dto.response.ChangePasswordResponse;
 import shop.apppang.domain.user.dto.response.UserMeResponse;
 import shop.apppang.domain.user.dto.response.UserResponse;
 import shop.apppang.domain.user.entity.User;
+import shop.apppang.domain.user.exception.InvalidCurrentPasswordException;
 import shop.apppang.domain.user.exception.InvalidNameException;
 import shop.apppang.domain.user.repository.UserRepository;
 
@@ -18,6 +22,7 @@ import shop.apppang.domain.user.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserResponse updateMyInfo(Long userId, UpdateUserRequest request) {
@@ -62,6 +67,22 @@ public class UserService {
                 .phoneNumber(user.getPhoneNumber())
                 .appMoney(user.getAppMoney())
                 .createdAt(user.getCreatedAt())
+                .build();
+    }
+
+    @Transactional
+    public ChangePasswordResponse changePassword(Long userId, ChangePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다"));
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new InvalidCurrentPasswordException();
+        }
+
+        user.changePassword(passwordEncoder.encode(request.getNewPassword()));
+
+        return ChangePasswordResponse.builder()
+                .message("비밀번호가 변경되었습니다")
                 .build();
     }
 }
