@@ -46,4 +46,8 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.appMoney = (appMoney != null) ? appMoney : 0L;
     }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }

@@ -4,11 +4,13 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.util.Date;
 
 @Component
@@ -38,6 +40,34 @@ public class JwtTokenProvider {
             return RESET_TOKEN_PREFIX + signedJWT.serialize();
         } catch (JOSEException e){
             throw new IllegalStateException("JWT 서명에 실패했습니다.", e);
+        }
+    }
+
+    public Long validateResetTokenAndGetUserId(String token) {
+        if (token == null || !token.startsWith(RESET_TOKEN_PREFIX)) {
+            throw new IllegalArgumentException("유효하지 않은 리셋 토큰입니다.");
+        }
+
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token.substring(RESET_TOKEN_PREFIX.length()));
+
+            if (!signedJWT.verify(new MACVerifier(jwtProperties.getSecret().getBytes()))) {
+                throw new IllegalArgumentException("유효하지 않은 리셋 토큰입니다.");
+            }
+
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+
+            if (!"password-reset".equals(claims.getClaim("purpose"))) {
+                throw new IllegalArgumentException("유효하지 않은 리셋 토큰입니다.");
+            }
+
+            if (claims.getExpirationTime() == null || claims.getExpirationTime().before(new Date())) {
+                throw new IllegalArgumentException("만료된 리셋 토큰입니다.");
+            }
+
+            return Long.valueOf(claims.getSubject());
+        } catch (ParseException | JOSEException e) {
+            throw new IllegalArgumentException("유효하지 않은 리셋 토큰입니다.", e);
         }
     }
 
