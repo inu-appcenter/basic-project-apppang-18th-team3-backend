@@ -48,27 +48,49 @@ public class JwtTokenProvider {
             throw new IllegalArgumentException("유효하지 않은 리셋 토큰입니다.");
         }
 
+        JWTClaimsSet claims = parseAndVerify(token.substring(RESET_TOKEN_PREFIX.length()), "유효하지 않은 리셋 토큰입니다.");
+
+        if (!"password-reset".equals(claims.getClaim("purpose"))) {
+            throw new IllegalArgumentException("유효하지 않은 리셋 토큰입니다.");
+        }
+
+        if (isExpired(claims)) {
+            throw new IllegalArgumentException("만료된 리셋 토큰입니다.");
+        }
+
+        return Long.valueOf(claims.getSubject());
+    }
+
+    public Long validateAccessTokenAndGetUserId(String token) {
+        if (token == null) {
+            throw new IllegalArgumentException("유효하지 않은 토큰입니다.");
+        }
+
+        JWTClaimsSet claims = parseAndVerify(token, "유효하지 않은 토큰입니다.");
+
+        if (isExpired(claims)) {
+            throw new IllegalArgumentException("만료된 토큰입니다.");
+        }
+
+        return Long.valueOf(claims.getSubject());
+    }
+
+    private JWTClaimsSet parseAndVerify(String jwt, String invalidMessage) {
         try {
-            SignedJWT signedJWT = SignedJWT.parse(token.substring(RESET_TOKEN_PREFIX.length()));
+            SignedJWT signedJWT = SignedJWT.parse(jwt);
 
             if (!signedJWT.verify(new MACVerifier(jwtProperties.getSecret().getBytes()))) {
-                throw new IllegalArgumentException("유효하지 않은 리셋 토큰입니다.");
+                throw new IllegalArgumentException(invalidMessage);
             }
 
-            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
-
-            if (!"password-reset".equals(claims.getClaim("purpose"))) {
-                throw new IllegalArgumentException("유효하지 않은 리셋 토큰입니다.");
-            }
-
-            if (claims.getExpirationTime() == null || claims.getExpirationTime().before(new Date())) {
-                throw new IllegalArgumentException("만료된 리셋 토큰입니다.");
-            }
-
-            return Long.valueOf(claims.getSubject());
+            return signedJWT.getJWTClaimsSet();
         } catch (ParseException | JOSEException e) {
-            throw new IllegalArgumentException("유효하지 않은 리셋 토큰입니다.", e);
+            throw new IllegalArgumentException(invalidMessage, e);
         }
+    }
+
+    private boolean isExpired(JWTClaimsSet claims) {
+        return claims.getExpirationTime() == null || claims.getExpirationTime().before(new Date());
     }
 
     public String generateAccessToken(Long userId, String email){

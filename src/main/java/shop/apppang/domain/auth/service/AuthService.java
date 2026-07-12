@@ -13,6 +13,7 @@ import shop.apppang.domain.auth.dto.request.SignupRequest;
 import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
 import shop.apppang.domain.auth.dto.response.FindEmailResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
+import shop.apppang.domain.auth.dto.response.LogoutResponse;
 import shop.apppang.domain.auth.dto.response.PasswordResetVerifyResponse;
 import shop.apppang.domain.auth.dto.response.ResetPasswordResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
@@ -150,6 +151,12 @@ public class AuthService {
 
         return ResetPasswordResponse.builder()
                 .message("비밀번호가 재설정되었습니다")
+                .build();
+    }
+
+    public LogoutResponse logout() {
+        return LogoutResponse.builder()
+                .message("로그아웃되었습니다")
                 .build();
     }
 }

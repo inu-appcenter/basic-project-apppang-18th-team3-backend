@@ -17,6 +17,7 @@ import shop.apppang.domain.auth.dto.request.SignupRequest;
 import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
 import shop.apppang.domain.auth.dto.response.FindEmailResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
+import shop.apppang.domain.auth.dto.response.LogoutResponse;
 import shop.apppang.domain.auth.dto.response.PasswordResetVerifyResponse;
 import shop.apppang.domain.auth.dto.response.ResetPasswordResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
@@ -78,6 +79,14 @@ public class AuthController {
     public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
 
         ResetPasswordResponse response = authService.resetPassword(request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponse> logout() {
+
+        LogoutResponse response = authService.logout();
 
         return ResponseEntity.ok(response);
     }
