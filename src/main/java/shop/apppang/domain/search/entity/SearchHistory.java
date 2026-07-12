@@ -1,4 +1,4 @@
-package shop.apppang.domain.chat.entity;
+package shop.apppang.domain.search.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,11 +12,11 @@ import shop.apppang.domain.user.entity.User;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "chat_messages")
-public class ChatMessageEntity {
+@Getter
+@Table(name = "search_histories")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class SearchHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,24 +26,16 @@ public class ChatMessageEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = true, length = 255)
-    private String sessionId;
-
-    @Column(nullable = true, length = 20)
-    private String role;
-
-    @Column(nullable = true, columnDefinition = "TEXT")
-    private String message;
+    @Column(nullable = false, length = 50)
+    private String keyword;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime searchedAt;
 
     @Builder
-    public ChatMessageEntity(User user, String sessionId, String role, String message) {
+    public SearchHistory(User user, String keyword) {
         this.user = user;
-        this.sessionId = sessionId;
-        this.role = role;
-        this.message = message;
+        this.keyword = keyword;
     }
 }
