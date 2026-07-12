@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "search_histories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SearchHistoryEntity {
+public class SearchHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class SearchHistoryEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = true, length = 255)
+    @Column(nullable = false, length = 50)
     private String keyword;
 
     @CreatedDate
@@ -34,7 +34,7 @@ public class SearchHistoryEntity {
     private LocalDateTime searchedAt;
 
     @Builder
-    public SearchHistoryEntity(User user, String keyword) {
+    public SearchHistory(User user, String keyword) {
         this.user = user;
         this.keyword = keyword;
     }

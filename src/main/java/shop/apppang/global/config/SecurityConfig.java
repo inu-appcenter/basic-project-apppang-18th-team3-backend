@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import shop.apppang.global.jwt.JwtAuthenticationEntryPoint;
 import shop.apppang.global.jwt.JwtAuthenticationFilter;
 
 @Configuration
@@ -17,6 +18,8 @@ import shop.apppang.global.jwt.JwtAuthenticationFilter;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -32,9 +35,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/logout").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/search/suggestions").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(basic -> basic.disable())
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
