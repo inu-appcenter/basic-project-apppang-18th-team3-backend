@@ -65,4 +65,13 @@ public class SearchService {
         }
     }
 
+    @Transactional
+    public void deleteHistory(Long userId, String keyword) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberNotFoundException("사용자를 찾을 수 없습니다."));
+
+        searchHistoryRepository.deleteByUserAndKeyword(user, keyword);
+    }
+
 }

@@ -10,4 +10,6 @@ public interface SearchHistoryRepository extends JpaRepository<SearchHistory, Lo
 
     List<SearchHistory> findByUserOrderBySearchedAtAsc(User user);
 
+    long deleteByUserAndKeyword(User user, String keyword);
+
 }
