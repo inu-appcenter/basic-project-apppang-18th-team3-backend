@@ -3,9 +3,11 @@ package shop.apppang.domain.user.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
-public class UserResponse {
+public class UserMeResponse {
 
     private Long userId;
 
@@ -14,4 +16,8 @@ public class UserResponse {
     private String name;
 
     private String phoneNumber;
+
+    private Long appMoney;
+
+    private LocalDateTime createdAt;
 }

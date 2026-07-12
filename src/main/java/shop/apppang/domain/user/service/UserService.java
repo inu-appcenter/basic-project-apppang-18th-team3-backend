@@ -7,6 +7,7 @@ import org.springframework.util.StringUtils;
 import shop.apppang.domain.auth.exception.DuplicateEmailException;
 import shop.apppang.domain.auth.exception.MemberNotFoundException;
 import shop.apppang.domain.user.dto.request.UpdateUserRequest;
+import shop.apppang.domain.user.dto.response.UserMeResponse;
 import shop.apppang.domain.user.dto.response.UserResponse;
 import shop.apppang.domain.user.entity.User;
 import shop.apppang.domain.user.exception.InvalidNameException;
@@ -37,15 +38,30 @@ public class UserService {
             user.changeEmail(request.getEmail());
         }
 
-        if (request.getPhone() != null) {
-            user.changePhoneNumber(request.getPhone());
+        if (request.getPhoneNumber() != null) {
+            user.changePhoneNumber(request.getPhoneNumber());
         }
 
         return UserResponse.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
-                .phone(user.getPhoneNumber())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public UserMeResponse getMyInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberNotFoundException("회원 정보를 찾을 수 없습니다"));
+
+        return UserMeResponse.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .appMoney(user.getAppMoney())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }
