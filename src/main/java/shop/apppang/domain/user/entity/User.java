@@ -55,4 +55,15 @@ public class User {
         this.password = encodedPassword;
     }
 
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 }
