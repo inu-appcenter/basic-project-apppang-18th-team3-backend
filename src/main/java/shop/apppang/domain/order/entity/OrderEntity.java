@@ -85,4 +85,5 @@ public class OrderEntity {
         this.totalPrice = totalPrice;
         this.status = status;
     }
+    public void changeStatus(String status) { this.status = status; }
 }

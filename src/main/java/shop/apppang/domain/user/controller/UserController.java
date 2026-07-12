@@ -14,6 +14,7 @@ import shop.apppang.domain.user.dto.response.ChangePasswordResponse;
 import shop.apppang.domain.user.dto.response.UserMeResponse;
 import shop.apppang.domain.user.dto.response.UserResponse;
 import shop.apppang.domain.user.service.UserService;
+import shop.apppang.domain.user.dto.RecentProductResponse;
 
 @RestController
 @RequestMapping("/api/users")
@@ -38,4 +39,11 @@ public class UserController {
                                                    @Valid @RequestBody ChangePasswordRequest request) {
         return userService.changePassword(userId, request);
     }
+    @GetMapping("/recent-products")
+    public RecentProductResponse getRecentProducts(@AuthenticationPrincipal Long userId) {
+
+        return userService.getRecentProducts(userId);
+
+    }
+
 }
