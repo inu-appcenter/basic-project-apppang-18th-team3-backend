@@ -81,4 +81,6 @@ public class ProductEntity {
         this.rocketDelivery = rocketDelivery;
         this.isActive = isActive;
     }
+    public void decreaseStock(int amount) { this.stock -= amount; }
+    public void increaseStock(int amount) { this.stock += amount; }
 }
