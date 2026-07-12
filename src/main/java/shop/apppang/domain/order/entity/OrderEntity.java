@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import shop.apppang.domain.user.entity.UserEntity;
+import shop.apppang.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +24,7 @@ public class OrderEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private User user;
 
     @Column(nullable = true, length = 100)
     private String shippingRecipientName;
@@ -67,7 +67,7 @@ public class OrderEntity {
     private LocalDateTime createdAt;
 
     @Builder
-    public OrderEntity(UserEntity user, String shippingRecipientName, String shippingPhone,
+    public OrderEntity(User user, String shippingRecipientName, String shippingPhone,
                        String shippingZipcode, String shippingAddress, String shippingDetailAddress,
                        String deliveryRequest, Long productAmount, Long discountAmount,
                        Long shippingFee, String paymentMethod, Long totalPrice, String status) {
