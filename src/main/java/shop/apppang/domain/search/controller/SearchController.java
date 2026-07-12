@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import shop.apppang.domain.search.dto.SearchHistoryListResponse;
 import shop.apppang.domain.search.dto.SearchHistoryRequest;
 import shop.apppang.domain.search.dto.SearchSuggestionResponse;
 import shop.apppang.domain.search.service.SearchService;
@@ -39,6 +40,13 @@ public class SearchController {
         searchService.saveHistory(userId, request.getKeyword());
 
         return ResponseEntity.noContent().build();
+
+    }
+
+    @GetMapping("/search/history")
+    public SearchHistoryListResponse getHistories(@AuthenticationPrincipal Long userId) {
+
+        return searchService.getHistories(userId);
 
     }
 

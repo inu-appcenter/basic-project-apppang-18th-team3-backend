@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.apppang.domain.auth.exception.MemberNotFoundException;
 import shop.apppang.domain.product.entity.ProductEntity;
 import shop.apppang.domain.product.repository.ProductRepository;
+import shop.apppang.domain.search.dto.SearchHistoryListResponse;
 import shop.apppang.domain.search.dto.SearchSuggestionResponse;
 import shop.apppang.domain.search.entity.SearchHistory;
 import shop.apppang.domain.search.repository.SearchHistoryRepository;
@@ -72,6 +73,20 @@ public class SearchService {
                 .orElseThrow(() -> new MemberNotFoundException("사용자를 찾을 수 없습니다."));
 
         searchHistoryRepository.deleteByUserAndKeyword(user, keyword);
+    }
+
+    @Transactional(readOnly = true)
+    public SearchHistoryListResponse getHistories(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new MemberNotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<SearchHistoryListResponse.Item> items = searchHistoryRepository.findByUserOrderBySearchedAtDesc(user)
+                .stream()
+                .map(history -> new SearchHistoryListResponse.Item(history.getKeyword(), history.getSearchedAt()))
+                .toList();
+
+        return new SearchHistoryListResponse(items);
     }
 
 }
