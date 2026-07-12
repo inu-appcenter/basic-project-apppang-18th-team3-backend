@@ -47,7 +47,12 @@ public class User {
         this.appMoney = (appMoney != null) ? appMoney : 0L;
     }
 
+    public void useMoney(long amount) { this.appMoney -= amount; }
+    public void addMoney(long amount) { this.appMoney += amount; }
+
+
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
     }
+
 }

@@ -43,4 +43,5 @@ public class OrderItemEntity {
         this.price = price;
         this.status = status;
     }
+    public void changeStatus(String status) { this.status = status; }
 }
