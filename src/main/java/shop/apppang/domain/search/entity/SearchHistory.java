@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import shop.apppang.domain.user.entity.UserEntity;
+import shop.apppang.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Table(name = "search_histories")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SearchHistoryEntity {
+public class SearchHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,9 +24,9 @@ public class SearchHistoryEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private User user;
 
-    @Column(nullable = true, length = 255)
+    @Column(nullable = false, length = 50)
     private String keyword;
 
     @CreatedDate
@@ -34,7 +34,7 @@ public class SearchHistoryEntity {
     private LocalDateTime searchedAt;
 
     @Builder
-    public SearchHistoryEntity(UserEntity user, String keyword) {
+    public SearchHistory(User user, String keyword) {
         this.user = user;
         this.keyword = keyword;
     }

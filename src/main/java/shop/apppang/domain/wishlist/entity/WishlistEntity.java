@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.apppang.domain.product.entity.ProductEntity;
-import shop.apppang.domain.user.entity.UserEntity;
+import shop.apppang.domain.user.entity.User;
 
 @Entity
 @Getter
@@ -20,14 +20,14 @@ public class WishlistEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private ProductEntity product;
 
     @Builder
-    public WishlistEntity(UserEntity user, ProductEntity product) {
+    public WishlistEntity(User user, ProductEntity product) {
         this.user = user;
         this.product = product;
     }
