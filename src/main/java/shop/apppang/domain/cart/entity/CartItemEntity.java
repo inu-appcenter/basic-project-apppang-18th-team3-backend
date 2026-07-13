@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import shop.apppang.domain.product.entity.ProductEntity;
-import shop.apppang.domain.user.entity.UserEntity;
+import shop.apppang.domain.user.entity.User;
 
 @Entity
 @Getter
@@ -19,7 +19,7 @@ public class CartItemEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -29,7 +29,7 @@ public class CartItemEntity {
     private Integer quantity;
 
     @Builder
-    public CartItemEntity(UserEntity user, ProductEntity product, Integer quantity) {
+    public CartItemEntity(User user, ProductEntity product, Integer quantity) {
         this.user = user;
         this.product = product;
         this.quantity = quantity;

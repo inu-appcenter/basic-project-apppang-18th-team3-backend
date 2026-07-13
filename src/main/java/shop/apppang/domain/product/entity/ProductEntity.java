@@ -58,16 +58,20 @@ public class ProductEntity {
     @Column(nullable = true)
     private Boolean isActive;
 
+    @Column(nullable = true, length = 255)
+    private String unitPrice;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public ProductEntity(CategoryEntity category, String brand, String name, Long price, Long originalPrice, Integer stock, String optionInfo, String description, String detailContent, String shippingInfo, Boolean rocketDelivery, Boolean isActive) {
+    public ProductEntity(CategoryEntity category, String brand, String name,String unitPrice, Long price, Long originalPrice, Integer stock, String optionInfo, String description, String detailContent, String shippingInfo, Boolean rocketDelivery, Boolean isActive) {
         this.category = category;
         this.brand = brand;
         this.name = name;
         this.price = price;
+        this.unitPrice = unitPrice;
         this.originalPrice = originalPrice;
         this.stock = stock;
         this.optionInfo = optionInfo;
@@ -77,4 +81,6 @@ public class ProductEntity {
         this.rocketDelivery = rocketDelivery;
         this.isActive = isActive;
     }
+    public void decreaseStock(int amount) { this.stock -= amount; }
+    public void increaseStock(int amount) { this.stock += amount; }
 }

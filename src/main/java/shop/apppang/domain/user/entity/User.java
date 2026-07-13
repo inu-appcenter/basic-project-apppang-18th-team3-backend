@@ -8,11 +8,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="users")
+@Table(name = "users", uniqueConstraints = {
+        @UniqueConstraint(columnNames = "email")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
-public class UserEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,11 +39,31 @@ public class UserEntity {
     private LocalDateTime createdAt;
 
     @Builder
-    public UserEntity(String email, String password, String name, String phoneNumber, Long appMoney) {
+    public User(String email, String password, String name, String phoneNumber, Long appMoney) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.appMoney = (appMoney != null) ? appMoney : 0L;
+    }
+
+    public void useMoney(long amount) { this.appMoney -= amount; }
+    public void addMoney(long amount) { this.appMoney += amount; }
+
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }
