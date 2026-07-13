@@ -34,4 +34,8 @@ public class CartItemEntity {
         this.product = product;
         this.quantity = quantity;
     }
+
+    public void changeQuantity(int quantity) { this.quantity = quantity; }   // 수량 변경
+    public void addQuantity(int amount) { this.quantity += amount; }         // 수량 합산(담기)
+
 }
