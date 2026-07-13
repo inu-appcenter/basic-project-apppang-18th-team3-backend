@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import shop.apppang.domain.product.entity.ProductEntity;
-import shop.apppang.domain.user.entity.UserEntity;
+import shop.apppang.domain.user.entity.User;
 import shop.apppang.domain.wishlist.dto.WishlistResponse;
 import shop.apppang.domain.wishlist.entity.WishlistEntity;
 import shop.apppang.domain.wishlist.repository.WishlistRepository;
@@ -32,7 +32,7 @@ public class WishlistService {
         if (wishlistRepository.existsByUser_IdAndProduct_Id(userId, productId)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "이미 찜한 상품입니다");
         }
-        UserEntity user = em.getReference(UserEntity.class, userId);
+        User user = em.getReference(User.class, userId);
         ProductEntity product = em.getReference(ProductEntity.class, productId);
 
         WishlistEntity wishlist = WishlistEntity.builder()
