@@ -1,6 +1,7 @@
 package shop.apppang.domain.product.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.product.dto.ProductDetailResponse;
 import shop.apppang.domain.product.dto.ProductListResponse;
@@ -16,19 +17,19 @@ public class ProductController {
     // 상품 목록 조회
     @GetMapping
     public ProductListResponse getProducts() {
-
         return productService.getProducts();
-
     }
 
     // 상품 상세 조회
     @GetMapping("/{productId}")
     public ProductDetailResponse getProduct(
-            @PathVariable Long productId
+            @PathVariable Long productId,
+            Authentication authentication
     ) {
 
-        return productService.getProduct(productId);
+        Long userId = (Long) authentication.getPrincipal();
 
+        return productService.getProduct(userId, productId);
     }
 
 }

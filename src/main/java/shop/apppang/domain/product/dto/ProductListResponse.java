@@ -9,20 +9,20 @@ import java.util.List;
 @AllArgsConstructor
 public class ProductListResponse {
 
-    private Long categoryId;                   // 카테고리 ID
+    private Long categoryId;
 
-    private String categoryName;               // 카테고리명
+    private String categoryName;
 
-    private String keyword;                    // 검색 키워드
+    private String keyword;
 
-    private Integer page;                      // 현재 페이지
+    private Integer page;
 
-    private Integer size;                      // 페이지 크기
+    private Integer size;
 
-    private Integer total;                     // 전체 상품 개수
+    private Integer total;
 
-    private Boolean hasNext;                   // 다음 페이지 존재 여부
+    private Boolean hasNext;
 
-    private List<ProductItemResponse> items;   // 상품 목록
+    private List<ProductItemResponse> items;
 
 }
