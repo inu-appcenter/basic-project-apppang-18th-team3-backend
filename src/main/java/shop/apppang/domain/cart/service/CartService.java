@@ -11,7 +11,7 @@ import shop.apppang.domain.cart.dto.CartResponse;
 import shop.apppang.domain.cart.entity.CartItemEntity;
 import shop.apppang.domain.cart.repository.CartRepository;
 import shop.apppang.domain.product.entity.ProductEntity;
-import shop.apppang.domain.user.entity.UserEntity;
+import shop.apppang.domain.user.entity.User;
 import java.util.Optional;
 
 @Service
@@ -38,7 +38,7 @@ public class CartService {
             item.addQuantity(qty);                 // 합산
             return CartItemResponse.from(item);
         }
-        UserEntity user = em.getReference(UserEntity.class, userId);
+        User user = em.getReference(User.class, userId);
         ProductEntity product = em.getReference(ProductEntity.class, productId);
         CartItemEntity item = CartItemEntity.builder()
                 .user(user).product(product).quantity(qty).build();
