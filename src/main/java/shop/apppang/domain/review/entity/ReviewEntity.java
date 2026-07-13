@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import shop.apppang.domain.product.entity.ProductEntity;
-import shop.apppang.domain.user.entity.UserEntity;
+import shop.apppang.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +25,7 @@ public class ReviewEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
@@ -45,7 +45,7 @@ public class ReviewEntity {
     private LocalDateTime createdAt;
 
     @Builder
-    public ReviewEntity(UserEntity user, ProductEntity product, Integer rating, String title, String content) {
+    public ReviewEntity(User user, ProductEntity product, Integer rating, String title, String content) {
         this.user = user;
         this.product = product;
         this.rating = rating;

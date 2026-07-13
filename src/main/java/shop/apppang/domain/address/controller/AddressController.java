@@ -1,5 +1,6 @@
 package shop.apppang.domain.address.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import shop.apppang.domain.address.dto.AddressRequest;
 import shop.apppang.domain.address.dto.AddressResponse;
 import shop.apppang.domain.address.service.AddressService;
@@ -17,14 +18,14 @@ public class AddressController {
 
     // 배송지 목록 조회  →  GET /api/addresses?userId=1
     @GetMapping
-    public ResponseEntity<List<AddressResponse>> getAddresses(@RequestParam Long userId) {
+    public ResponseEntity<List<AddressResponse>> getAddresses(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(addressService.getAddresses(userId));
     }
 
     // 배송지 추가  →  POST /api/addresses?userId=1  (body: 배송지 정보)
     @PostMapping
     public ResponseEntity<AddressResponse> addAddress(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal Long userId,
             @RequestBody AddressRequest request) {
         return ResponseEntity.status(201).body(addressService.addAddress(userId, request));
     }
@@ -32,7 +33,7 @@ public class AddressController {
     // 배송지 수정  →  PATCH /api/addresses/3?userId=1
     @PatchMapping("/{addressId}")
     public ResponseEntity<AddressResponse> updateAddress(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal Long userId,
             @PathVariable Long addressId,
             @RequestBody AddressRequest request) {
         return ResponseEntity.ok(addressService.updateAddress(userId, addressId, request));
@@ -41,7 +42,7 @@ public class AddressController {
     // 배송지 삭제  →  DELETE /api/addresses/3?userId=1
     @DeleteMapping("/{addressId}")
     public ResponseEntity<Void> deleteAddress(
-            @RequestParam Long userId,
+            @AuthenticationPrincipal Long userId,
             @PathVariable Long addressId) {
         addressService.deleteAddress(userId, addressId);
         return ResponseEntity.noContent().build();   // 204

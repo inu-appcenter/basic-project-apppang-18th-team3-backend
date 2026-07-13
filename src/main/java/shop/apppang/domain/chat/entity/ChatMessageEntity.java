@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import shop.apppang.domain.user.entity.UserEntity;
+import shop.apppang.domain.user.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -24,7 +24,7 @@ public class ChatMessageEntity {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    private User user;
 
     @Column(nullable = true, length = 255)
     private String sessionId;
@@ -40,7 +40,7 @@ public class ChatMessageEntity {
     private LocalDateTime createdAt;
 
     @Builder
-    public ChatMessageEntity(UserEntity user, String sessionId, String role, String message) {
+    public ChatMessageEntity(User user, String sessionId, String role, String message) {
         this.user = user;
         this.sessionId = sessionId;
         this.role = role;
