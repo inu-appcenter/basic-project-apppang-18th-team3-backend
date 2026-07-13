@@ -2,13 +2,20 @@ package shop.apppang.domain.product.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import shop.apppang.domain.order.entity.OrderEntity;
+import shop.apppang.domain.order.entity.OrderItemEntity;
+import shop.apppang.domain.order.repository.OrderItemRepository;
+import shop.apppang.domain.order.repository.OrderRepository;
 import shop.apppang.domain.product.dto.ProductDetailResponse;
 import shop.apppang.domain.product.dto.ProductItemResponse;
 import shop.apppang.domain.product.dto.ProductListResponse;
 import shop.apppang.domain.product.entity.ProductEntity;
+import shop.apppang.domain.product.entity.ProductImageEntity;
 import shop.apppang.domain.product.repository.ProductImageRepository;
 import shop.apppang.domain.product.repository.ProductRepository;
 import shop.apppang.domain.review.dto.ReviewSummaryResponse;
+import shop.apppang.domain.review.repository.ReviewRepository;
+import shop.apppang.domain.wishlist.repository.WishlistRepository;
 
 import java.util.List;
 
@@ -20,59 +27,131 @@ public class ProductService {
 
     private final ProductImageRepository productImageRepository;
 
-    // 상품 목록 조회
+    private final ReviewRepository reviewRepository;
+
+    private final WishlistRepository wishlistRepository;
+
+    private final OrderRepository orderRepository;
+
+    private final OrderItemRepository orderItemRepository;
+
     public ProductListResponse getProducts() {
 
         List<ProductEntity> products = productRepository.findAll();
 
         List<ProductItemResponse> items = products.stream()
                 .map(product -> {
-                    Integer discountRate = calculateDiscountRate(
-                            product.getPrice(),
-                            product.getOriginalPrice()
-                    );
+
+                    String imageUrl = productImageRepository
+                            .findByProductAndIsMainTrue(product)
+                            .map(ProductImageEntity::getImageUrl)
+                            .orElse(null);
+
+                    Double averageRating =
+                            reviewRepository.findAverageRatingByProductId(product.getId());
+
+                    if (averageRating == null) {
+                        averageRating = 0.0;
+                    }
+
+                    Integer discountRate =
+                            calculateDiscountRate(
+                                    product.getPrice(),
+                                    product.getOriginalPrice()
+                            );
+
                     return new ProductItemResponse(
                             product.getId(),
                             product.getName(),
-                            null,                       // 대표 이미지 (추후 구현)
+                            imageUrl,
                             product.getOptionInfo(),
                             product.getPrice(),
                             product.getOriginalPrice(),
                             discountRate,
                             product.getUnitPrice(),
-                            0.0,                        // 평균 평점 (추후 구현)
-                            0,                          // 리뷰 개수 (추후 구현)
+                            averageRating,
+                            (int) reviewRepository.countByProductId(product.getId()),
                             product.getShippingInfo(),
                             product.getRocketDelivery()
                     );
-                })
-                .toList();
+
+                }).toList();
 
         return new ProductListResponse(
-                null,                   // categoryId
-                null,                   // categoryName
-                null,                   // keyword
-                1,                      // page
-                items.size(),           // size
-                items.size(),           // total
-                false,                  // hasNext
+                null,
+                null,
+                null,
+                1,
+                items.size(),
+                items.size(),
+                false,
                 items
         );
     }
 
-    // 상품 상세 조회
-    public ProductDetailResponse getProduct(Long productId) {
+    public ProductDetailResponse getProduct(Long userId, Long productId) {
 
-        ProductEntity product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+        ProductEntity product =
+                productRepository.findById(productId)
+                        .orElseThrow(() ->
+                                new RuntimeException("상품을 찾을 수 없습니다.")
+                        );
 
-        Integer discountRate = calculateDiscountRate(product.getPrice(), product.getOriginalPrice());
+        Integer discountRate =
+                calculateDiscountRate(
+                        product.getPrice(),
+                        product.getOriginalPrice()
+                );
+
+        List<String> images =
+                productImageRepository.findByProduct(product)
+                        .stream()
+                        .map(ProductImageEntity::getImageUrl)
+                        .toList();
+
+        Double averageRating =
+                reviewRepository.findAverageRatingByProductId(productId);
+
+        if (averageRating == null) {
+            averageRating = 0.0;
+        }
+
+        Long reviewCount =
+                reviewRepository.countByProductId(productId);
+
+        boolean isWished =
+                wishlistRepository.existsByUser_IdAndProduct_Id(
+                        userId,
+                        productId
+                );
+
+        List<OrderEntity> orders =
+                orderRepository.findByUser_IdOrderByCreatedAtDesc(userId);
+
+        boolean canWriteReview = false;
+
+        for (OrderEntity order : orders) {
+
+            if (!"DELIVERED".equals(order.getStatus())) {
+                continue;
+            }
+
+            List<OrderItemEntity> items =
+                    orderItemRepository.findByOrder_Id(order.getId());
+
+            if (items.stream().anyMatch(item ->
+                    item.getProduct().getId().equals(productId))) {
+
+                canWriteReview = true;
+                break;
+            }
+        }
 
         return new ProductDetailResponse(
                 product.getId(),
                 product.getBrand(),
                 product.getName(),
-                null,                               // images (추후 구현)
+                images,
                 product.getOptionInfo(),
                 product.getPrice(),
                 product.getOriginalPrice(),
@@ -82,19 +161,27 @@ public class ProductService {
                 product.getRocketDelivery(),
                 product.getStock(),
                 product.getDescription(),
-                null,                               // detailImages (추후 구현)
+                null,
                 product.getCategory().getId(),
-                false,                              // isWished (추후 구현)
-                false,                              // canWriteReview (추후 구현)
-                new ReviewSummaryResponse()         // reviewSummary (추후 구현)
+                isWished,
+                canWriteReview,
+                new ReviewSummaryResponse(
+                        averageRating,
+                        reviewCount
+                )
         );
     }
 
-    // 할인율 계산
-    private Integer calculateDiscountRate(Long price, Long originalPrice) {
+    private Integer calculateDiscountRate(
+            Long price,
+            Long originalPrice
+    ) {
+
         if (originalPrice == null || originalPrice == 0) {
             return 0;
         }
+
         return (int) (((originalPrice - price) * 100) / originalPrice);
+
     }
 }
