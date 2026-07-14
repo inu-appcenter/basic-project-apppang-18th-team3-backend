@@ -7,28 +7,28 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ProductItemResponse {
 
-    private Long productId;          // 상품 ID
+    private Long productId;
 
-    private String name;             // 상품명
+    private String name;
 
-    private String imageUrl;         // 대표 이미지
+    private String imageUrl;
 
-    private String optionInfo;       // 상품 단위
+    private String optionInfo;
 
-    private Long price;              // 판매 가격
+    private Long price;
 
-    private Long originalPrice;      // 정가
+    private Long originalPrice;
 
-    private Integer discountRate;    // 할인율(서비스에서 계산)
+    private Integer discountRate;
 
-    private String unitPrice;        // 단위 가격
+    private String unitPrice;
 
-    private Double averageRating;    // 평균 평점
+    private Double averageRating;
 
-    private Integer reviewCount;     // 리뷰 개수
+    private Integer reviewCount;
 
-    private String shippingInfo;     // 배송 정보
+    private String shippingInfo;
 
-    private Boolean rocketDelivery;  // 로켓배송 여부
+    private Boolean rocketDelivery;
 
 }
