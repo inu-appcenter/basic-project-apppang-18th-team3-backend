@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.server.ResponseStatusException;
 import shop.apppang.domain.auth.exception.InvalidCredentialsException;
 import shop.apppang.domain.auth.exception.InvalidPasswordFormatException;
 import shop.apppang.domain.auth.exception.InvalidResetTokenException;
@@ -78,5 +79,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR) // 500
                 .body(new ErrorResponse("서버 오류가 발생했습니다."));
+    }
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ErrorResponse> handleResponseStatus(ResponseStatusException e) {
+        return ResponseEntity
+                .status(e.getStatusCode())
+                .body(new ErrorResponse(e.getReason()));
     }
 }
