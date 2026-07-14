@@ -13,7 +13,6 @@ import shop.apppang.domain.review.service.ReviewService;
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
 public class ReviewController {
-/*
 
     private final ReviewService reviewService;
 
@@ -68,5 +67,5 @@ public class ReviewController {
                 .ok(response);
 
     }
-*/
+
 }

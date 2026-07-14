@@ -18,6 +18,8 @@ import shop.apppang.domain.review.repository.ReviewRepository;
 import shop.apppang.domain.wishlist.repository.WishlistRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,13 +41,22 @@ public class ProductService {
 
         List<ProductEntity> products = productRepository.findAll();
 
+        List<Long> productIds = products.stream()
+                .map(ProductEntity::getId)
+                .toList();
+
+        Map<Long, String> mainImageUrlByProductId = productImageRepository
+                .findByProductIdInAndIsMainTrue(productIds).stream()
+                .collect(Collectors.toMap(
+                        image -> image.getProduct().getId(),
+                        ProductImageEntity::getImageUrl,
+                        (existing, replacement) -> existing
+                ));
+
         List<ProductItemResponse> items = products.stream()
                 .map(product -> {
 
-                    String imageUrl = productImageRepository
-                            .findByProductAndIsMainTrue(product)
-                            .map(ProductImageEntity::getImageUrl)
-                            .orElse(null);
+                    String imageUrl = mainImageUrlByProductId.get(product.getId());
 
                     Double averageRating =
                             reviewRepository.findAverageRatingByProductId(product.getId());

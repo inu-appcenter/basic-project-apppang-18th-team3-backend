@@ -6,7 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import shop.apppang.domain.product.entity.ProductEntity;
-// import shop.apppang.domain.product.repository.ProductRepository; 머지 후 추가
+import shop.apppang.domain.product.repository.ProductRepository;
 import shop.apppang.domain.review.dto.ReviewCreateRequest;
 import shop.apppang.domain.review.dto.ReviewCreateResponse;
 import shop.apppang.domain.review.dto.ReviewItemResponse;
@@ -15,8 +15,8 @@ import shop.apppang.domain.review.entity.ReviewEntity;
 import shop.apppang.domain.review.entity.ReviewImageEntity;
 import shop.apppang.domain.review.repository.ReviewImageRepository;
 import shop.apppang.domain.review.repository.ReviewRepository;
-import shop.apppang.domain.user.entity.UserEntity;
-// import shop.apppang.domain.user.repository.UserRepository; 머지 후 추가
+import shop.apppang.domain.user.entity.User;
+import shop.apppang.domain.user.repository.UserRepository;
 
 import java.util.List;
 
@@ -25,7 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Transactional
 public class ReviewService {
-/* 머지 후 추가
 
     private final ReviewRepository reviewRepository;
 
@@ -47,7 +46,7 @@ public class ReviewService {
         // 주문 도메인 연결 후 추가 (배송 완료된 상품인지 확인)
 
 
-        UserEntity user =
+        User user =
                 userRepository.findById(userId)
                         .orElseThrow(() ->
                                 new IllegalArgumentException("사용자를 찾을 수 없습니다")
@@ -105,10 +104,6 @@ public class ReviewService {
         );
 
     }
-
-
-
-
 
     // 리뷰 목록 조회
     @Transactional(readOnly = true)
@@ -186,5 +181,5 @@ public class ReviewService {
         );
 
     }
-*/
+
 }
