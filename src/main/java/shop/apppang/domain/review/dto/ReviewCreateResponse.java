@@ -5,10 +5,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ReviewSummaryResponse {
+public class ReviewCreateResponse {
 
-    private Double averageRating;
+    private Long reviewId;
 
-    private Long reviewCount;
+    private Integer rating;
+
+    private String title;
 
 }
