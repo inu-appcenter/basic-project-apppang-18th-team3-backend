@@ -1,6 +1,7 @@
 package shop.apppang.domain.category.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.apppang.domain.category.dto.CategoryResponse;
 import shop.apppang.domain.category.service.CategoryService;
 
+@Tag(name = "카테고리")
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor

@@ -2,6 +2,7 @@ package shop.apppang.domain.product.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +15,7 @@ import shop.apppang.domain.product.dto.ProductListResponse;
 import shop.apppang.domain.product.service.ProductService;
 import shop.apppang.global.exception.ErrorResponse;
 
+@Tag(name = "상품")
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor

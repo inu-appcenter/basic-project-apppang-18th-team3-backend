@@ -2,6 +2,7 @@ package shop.apppang.domain.order.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +17,7 @@ import shop.apppang.domain.order.service.OrderService;
 import shop.apppang.global.exception.ErrorResponse;
 import java.util.List;
 
+@Tag(name = "주문")
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor

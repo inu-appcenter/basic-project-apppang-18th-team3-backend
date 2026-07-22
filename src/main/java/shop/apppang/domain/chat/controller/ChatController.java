@@ -1,6 +1,7 @@
 package shop.apppang.domain.chat.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +20,7 @@ import shop.apppang.global.exception.ErrorResponse;
 
 import java.util.List;
 
+@Tag(name = "챗봇")
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor

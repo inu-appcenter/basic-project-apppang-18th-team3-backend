@@ -1,6 +1,7 @@
 package shop.apppang.domain.user.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,6 +24,7 @@ import shop.apppang.domain.user.service.UserService;
 import shop.apppang.domain.user.dto.RecentProductResponse;
 import shop.apppang.global.exception.ErrorResponse;
 
+@Tag(name = "회원")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
