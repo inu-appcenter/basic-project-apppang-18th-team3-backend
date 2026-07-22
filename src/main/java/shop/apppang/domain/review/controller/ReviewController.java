@@ -2,6 +2,10 @@ package shop.apppang.domain.review.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +14,7 @@ import shop.apppang.domain.review.dto.ReviewCreateRequest;
 import shop.apppang.domain.review.dto.ReviewCreateResponse;
 import shop.apppang.domain.review.dto.ReviewListResponse;
 import shop.apppang.domain.review.service.ReviewService;
+import shop.apppang.global.exception.ErrorResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +27,9 @@ public class ReviewController {
 
     // 리뷰 작성
     @Operation(summary = "리뷰 작성 (구매자만)")
+    @ApiResponse(responseCode = "403", description = "구매하지 않은 상품에 대한 리뷰 작성 시도",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"error\": \"구매한 상품만 리뷰를 작성할 수 있습니다\"}")))
     @PostMapping("/{productId}/reviews")
     public ResponseEntity<ReviewCreateResponse> createReview(
             @Parameter(description = "상품 ID", required = true) @PathVariable Long productId,

@@ -2,10 +2,15 @@ package shop.apppang.domain.address.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import shop.apppang.domain.address.dto.AddressRequest;
 import shop.apppang.domain.address.dto.AddressResponse;
 import shop.apppang.domain.address.service.AddressService;
+import shop.apppang.global.exception.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +32,9 @@ public class AddressController {
 
     // 배송지 추가  →  POST /api/addresses?userId=1  (body: 배송지 정보)
     @Operation(summary = "배송지 추가")
+    @ApiResponse(responseCode = "400", description = "필수 정보 누락 / 휴대폰 번호 형식 오류 중 하나",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"error\": \"필수 정보를 입력해주세요\"}")))
     @PostMapping
     public ResponseEntity<AddressResponse> addAddress(
             @AuthenticationPrincipal Long userId,

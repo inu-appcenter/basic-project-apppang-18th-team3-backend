@@ -2,6 +2,10 @@ package shop.apppang.domain.wishlist.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.wishlist.dto.WishlistRequest;
 import shop.apppang.domain.wishlist.dto.WishlistResponse;
 import shop.apppang.domain.wishlist.service.WishlistService;
+import shop.apppang.global.exception.ErrorResponse;
 import java.util.List;
 
 @RestController
@@ -25,6 +30,9 @@ public class WishlistController {
     }
 
     @Operation(summary = "찜하기")
+    @ApiResponse(responseCode = "409", description = "이미 찜한 상품",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"error\": \"이미 찜한 상품입니다\"}")))
     @PostMapping
     public ResponseEntity<WishlistResponse> addWishlist(
             @AuthenticationPrincipal Long userId,
