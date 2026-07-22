@@ -52,7 +52,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "이메일 중복 확인 (가입 화면 실시간)")
+    @Operation(summary = "이메일 중복 확인")
     @GetMapping("/check-email")
     public ResponseEntity<EmailCheckResponse> checkEmail(
             @RequestParam

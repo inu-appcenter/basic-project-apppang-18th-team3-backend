@@ -37,7 +37,7 @@ public class UserController {
         return userService.updateMyInfo(userId, request);
     }
 
-    @Operation(summary = "비밀번호 변경")
+    @Operation(summary = "비밀번호 변경 (마이페이지)")
     @PatchMapping("/me/password")
     public ChangePasswordResponse changePassword(@AuthenticationPrincipal Long userId,
                                                    @Valid @RequestBody ChangePasswordRequest request) {

@@ -27,7 +27,7 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @Operation(summary = "자동완성")
+    @Operation(summary = "검색어 자동완성")
     @GetMapping("/search/suggestions")
     public SearchSuggestionResponse getSuggestions(@RequestParam(required = false, defaultValue = "") String keyword) {
 

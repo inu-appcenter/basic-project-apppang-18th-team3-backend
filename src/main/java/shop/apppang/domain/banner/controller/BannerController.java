@@ -17,7 +17,7 @@ public class BannerController {
 
     private final BannerService bannerService;
 
-    @Operation(summary = "메인 배너 목록")
+    @Operation(summary = "메인 배너 목록 조회")
     @GetMapping("/banners")
     public List<BannerResponse> getBanners() {
 
