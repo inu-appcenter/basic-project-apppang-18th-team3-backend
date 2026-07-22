@@ -2,6 +2,7 @@ package shop.apppang.domain.wishlist.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +17,7 @@ import shop.apppang.domain.wishlist.service.WishlistService;
 import shop.apppang.global.exception.ErrorResponse;
 import java.util.List;
 
+@Tag(name = "찜")
 @RestController
 @RequestMapping("/api/wishlist")
 @RequiredArgsConstructor

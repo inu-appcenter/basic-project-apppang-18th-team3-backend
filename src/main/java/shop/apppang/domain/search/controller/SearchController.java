@@ -2,6 +2,7 @@ package shop.apppang.domain.search.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +27,7 @@ import shop.apppang.domain.search.dto.SearchSuggestionResponse;
 import shop.apppang.domain.search.service.SearchService;
 import shop.apppang.global.exception.ErrorResponse;
 
+@Tag(name = "검색")
 @Validated
 @RestController
 @RequestMapping("/api")

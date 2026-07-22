@@ -2,6 +2,7 @@ package shop.apppang.domain.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,6 +32,7 @@ import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.service.AuthService;
 import shop.apppang.global.exception.ErrorResponse;
 
+@Tag(name = "인증")
 @Validated
 @RestController
 @RequestMapping("/api/auth")
