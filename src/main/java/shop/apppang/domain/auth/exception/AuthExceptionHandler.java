@@ -16,11 +16,4 @@ public class AuthExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(e.getMessage()));
     }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrity(DataIntegrityViolationException e) {
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse("이미 가입된 이메일입니다"));
-    }
 }
