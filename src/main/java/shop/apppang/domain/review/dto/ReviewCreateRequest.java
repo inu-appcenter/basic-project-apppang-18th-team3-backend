@@ -3,10 +3,13 @@ package shop.apppang.domain.review.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class ReviewCreateRequest {
 
@@ -19,7 +22,6 @@ public class ReviewCreateRequest {
     @Schema(description = "리뷰 내용", example = "배송 빠르고 좋아요")
     private String content;
 
-    @Schema(description = "리뷰 이미지 URL 목록")
-    private List<String> images;
-
+    @Schema(description = "리뷰 이미지 파일 목록")
+    private List<MultipartFile> images;   // 실제 파일 (multipart)
 }

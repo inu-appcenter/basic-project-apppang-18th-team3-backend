@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import shop.apppang.domain.product.entity.ProductEntity;
 import shop.apppang.domain.product.repository.ProductRepository;
 import shop.apppang.domain.review.dto.ReviewCreateRequest;
@@ -17,6 +18,7 @@ import shop.apppang.domain.review.repository.ReviewImageRepository;
 import shop.apppang.domain.review.repository.ReviewRepository;
 import shop.apppang.domain.user.entity.User;
 import shop.apppang.domain.user.repository.UserRepository;
+import shop.apppang.global.s3.S3Uploader;
 
 import java.util.List;
 
@@ -34,7 +36,7 @@ public class ReviewService {
 
     private final UserRepository userRepository;
 
-
+    private final S3Uploader s3Uploader;   // 필드 추가
 
     // 리뷰 작성
     public ReviewCreateResponse createReview(
@@ -76,23 +78,19 @@ public class ReviewService {
 
 
 
-        // 리뷰 이미지 저장
-        if(request.getImages() != null){
+        // 리뷰 이미지 저장 (파일 → S3 업로드 → URL 저장)
+        if (request.getImages() != null) {
+            for (MultipartFile file : request.getImages()) {
+                if (file == null || file.isEmpty()) continue;
 
-            request.getImages()
-                    .forEach(imageUrl -> {
+                String imageUrl = s3Uploader.upload(file, "reviews");   // S3 업로드 후 URL
 
-                        ReviewImageEntity image =
-                                ReviewImageEntity.builder()
-                                        .review(savedReview)
-                                        .imageUrl(imageUrl)
-                                        .build();
-
-
-                        reviewImageRepository.save(image);
-
-                    });
-
+                ReviewImageEntity image = ReviewImageEntity.builder()
+                        .review(savedReview)
+                        .imageUrl(imageUrl)
+                        .build();
+                reviewImageRepository.save(image);
+            }
         }
 
 
