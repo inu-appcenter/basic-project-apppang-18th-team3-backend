@@ -1,6 +1,7 @@
 package shop.apppang.domain.address.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import shop.apppang.domain.address.dto.AddressRequest;
 import shop.apppang.domain.address.dto.AddressResponse;
@@ -38,7 +39,7 @@ public class AddressController {
     @PatchMapping("/{addressId}")
     public ResponseEntity<AddressResponse> updateAddress(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long addressId,
+            @Parameter(description = "배송지 ID", required = true) @PathVariable Long addressId,
             @RequestBody AddressRequest request) {
         return ResponseEntity.ok(addressService.updateAddress(userId, addressId, request));
     }
@@ -48,7 +49,7 @@ public class AddressController {
     @DeleteMapping("/{addressId}")
     public ResponseEntity<Void> deleteAddress(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long addressId) {
+            @Parameter(description = "배송지 ID", required = true) @PathVariable Long addressId) {
         addressService.deleteAddress(userId, addressId);
         return ResponseEntity.noContent().build();   // 204
     }

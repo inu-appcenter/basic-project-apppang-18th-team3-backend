@@ -1,6 +1,7 @@
 package shop.apppang.domain.search.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,9 @@ public class SearchController {
 
     @Operation(summary = "검색어 자동완성")
     @GetMapping("/search/suggestions")
-    public SearchSuggestionResponse getSuggestions(@RequestParam(required = false, defaultValue = "") String keyword) {
+    public SearchSuggestionResponse getSuggestions(
+            @Parameter(description = "자동완성 검색어", example = "티")
+            @RequestParam(required = false, defaultValue = "") String keyword) {
 
         return searchService.getSuggestions(keyword);
 
@@ -57,6 +60,7 @@ public class SearchController {
     @Operation(summary = "검색어 삭제")
     @DeleteMapping("/search/history")
     public ResponseEntity<Void> deleteHistory(@AuthenticationPrincipal Long userId,
+                                               @Parameter(description = "삭제할 검색어", required = true)
                                                @RequestParam @NotBlank(message = "keyword는 빈 값일 수 없습니다.") String keyword) {
 
         searchService.deleteHistory(userId, keyword);

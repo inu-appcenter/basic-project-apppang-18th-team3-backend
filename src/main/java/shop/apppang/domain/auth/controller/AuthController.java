@@ -1,6 +1,7 @@
 package shop.apppang.domain.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -55,6 +56,7 @@ public class AuthController {
     @Operation(summary = "이메일 중복 확인")
     @GetMapping("/check-email")
     public ResponseEntity<EmailCheckResponse> checkEmail(
+            @Parameter(description = "중복 확인할 이메일", required = true, example = "a@a.com")
             @RequestParam
             @Email(message = "올바른 이메일 형식을 입력해주세요.")
             @NotBlank(message = "이메일을 입력해주세요.")

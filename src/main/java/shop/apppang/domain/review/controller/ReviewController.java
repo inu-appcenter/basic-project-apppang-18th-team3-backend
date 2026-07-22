@@ -1,6 +1,7 @@
 package shop.apppang.domain.review.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class ReviewController {
     @Operation(summary = "리뷰 작성 (구매자만)")
     @PostMapping("/{productId}/reviews")
     public ResponseEntity<ReviewCreateResponse> createReview(
-            @PathVariable Long productId,
+            @Parameter(description = "상품 ID", required = true) @PathVariable Long productId,
             @RequestBody ReviewCreateRequest request
     ){
 
@@ -53,9 +54,9 @@ public class ReviewController {
     @Operation(summary = "상품 리뷰 목록 조회")
     @GetMapping("/{productId}/reviews")
     public ResponseEntity<ReviewListResponse> getReviews(
-            @PathVariable Long productId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
+            @Parameter(description = "상품 ID", required = true) @PathVariable Long productId,
+            @Parameter(description = "페이지 번호", example = "1") @RequestParam(defaultValue = "1") int page,
+            @Parameter(description = "페이지당 개수", example = "10") @RequestParam(defaultValue = "10") int size
     ){
 
         ReviewListResponse response =

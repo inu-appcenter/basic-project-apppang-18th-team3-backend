@@ -1,6 +1,7 @@
 package shop.apppang.domain.cart.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,7 +38,7 @@ public class CartController {
     @PatchMapping("/{cartItemId}")
     public ResponseEntity<CartItemResponse> updateQuantity(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long cartItemId,
+            @Parameter(description = "장바구니 항목 ID", required = true) @PathVariable Long cartItemId,
             @RequestBody CartUpdateRequest request) {
         return ResponseEntity.ok(cartService.updateQuantity(userId, cartItemId, request.quantity()));
     }
@@ -46,7 +47,7 @@ public class CartController {
     @DeleteMapping("/{cartItemId}")
     public ResponseEntity<Void> deleteCartItem(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long cartItemId) {
+            @Parameter(description = "장바구니 항목 ID", required = true) @PathVariable Long cartItemId) {
         cartService.deleteCartItem(userId, cartItemId);
         return ResponseEntity.noContent().build();
     }

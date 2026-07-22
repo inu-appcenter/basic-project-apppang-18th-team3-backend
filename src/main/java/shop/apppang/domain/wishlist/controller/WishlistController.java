@@ -1,6 +1,7 @@
 package shop.apppang.domain.wishlist.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,7 +36,7 @@ public class WishlistController {
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> removeWishlist(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long productId) {
+            @Parameter(description = "상품 ID", required = true) @PathVariable Long productId) {
         wishlistService.removeWishlist(userId, productId);
         return ResponseEntity.noContent().build();
     }

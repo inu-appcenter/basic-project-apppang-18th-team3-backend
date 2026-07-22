@@ -1,6 +1,7 @@
 package shop.apppang.domain.product.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class ProductController {
     @Operation(summary = "상품 상세 조회")
     @GetMapping("/{productId}")
     public ProductDetailResponse getProduct(
-            @PathVariable Long productId,
+            @Parameter(description = "상품 ID", required = true) @PathVariable Long productId,
             Authentication authentication
     ) {
 

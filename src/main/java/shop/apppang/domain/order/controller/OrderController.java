@@ -1,6 +1,7 @@
 package shop.apppang.domain.order.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,7 +35,7 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderDetailResponse> getOrderDetail(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long orderId) {
+            @Parameter(description = "주문 ID", required = true) @PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.getOrderDetail(userId, orderId));
     }
 
@@ -48,7 +49,7 @@ public class OrderController {
     @PostMapping("/{orderId}/cancel")
     public ResponseEntity<OrderCancelResponse> cancelOrder(
             @AuthenticationPrincipal Long userId,
-            @PathVariable Long orderId) {
+            @Parameter(description = "주문 ID", required = true) @PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.cancelOrder(userId, orderId));
     }
 }
