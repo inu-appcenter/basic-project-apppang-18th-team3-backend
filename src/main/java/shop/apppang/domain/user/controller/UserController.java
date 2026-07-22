@@ -1,5 +1,6 @@
 package shop.apppang.domain.user.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,22 +24,26 @@ public class UserController {
 
     private final UserService userService;
 
+    @Operation(summary = "내 정보 조회")
     @GetMapping("/me")
     public UserMeResponse getMe(@AuthenticationPrincipal Long userId) {
         return userService.getMyInfo(userId);
     }
 
+    @Operation(summary = "내 정보 수정")
     @PatchMapping("/me")
     public UserResponse updateMe(@AuthenticationPrincipal Long userId,
                                   @Valid @RequestBody UpdateUserRequest request) {
         return userService.updateMyInfo(userId, request);
     }
 
+    @Operation(summary = "비밀번호 변경")
     @PatchMapping("/me/password")
     public ChangePasswordResponse changePassword(@AuthenticationPrincipal Long userId,
                                                    @Valid @RequestBody ChangePasswordRequest request) {
         return userService.changePassword(userId, request);
     }
+    @Operation(summary = "최근 찾던 상품 조회")
     @GetMapping("/recent-products")
     public RecentProductResponse getRecentProducts(@AuthenticationPrincipal Long userId) {
 

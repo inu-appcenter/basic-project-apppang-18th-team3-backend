@@ -1,5 +1,6 @@
 package shop.apppang.domain.cart.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,11 +18,13 @@ public class CartController {
 
     private final CartService cartService;
 
+    @Operation(summary = "내 장바구니 조회")
     @GetMapping
     public ResponseEntity<CartResponse> getCart(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(cartService.getCart(userId));
     }
 
+    @Operation(summary = "장바구니 담기")
     @PostMapping
     public ResponseEntity<CartItemResponse> addToCart(
             @AuthenticationPrincipal Long userId,
@@ -30,6 +33,7 @@ public class CartController {
                 .body(cartService.addToCart(userId, request.productId(), request.quantity()));
     }
 
+    @Operation(summary = "장바구니 수량 변경")
     @PatchMapping("/{cartItemId}")
     public ResponseEntity<CartItemResponse> updateQuantity(
             @AuthenticationPrincipal Long userId,
@@ -38,6 +42,7 @@ public class CartController {
         return ResponseEntity.ok(cartService.updateQuantity(userId, cartItemId, request.quantity()));
     }
 
+    @Operation(summary = "장바구니 항목 삭제")
     @DeleteMapping("/{cartItemId}")
     public ResponseEntity<Void> deleteCartItem(
             @AuthenticationPrincipal Long userId,

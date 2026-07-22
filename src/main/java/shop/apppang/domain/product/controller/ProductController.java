@@ -1,5 +1,6 @@
 package shop.apppang.domain.product.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +16,14 @@ public class ProductController {
     private final ProductService productService;
 
     // 상품 목록 조회
+    @Operation(summary = "상품 목록 조회 (카테고리·검색, 필터, 정렬·페이지 공용)")
     @GetMapping
     public ProductListResponse getProducts() {
         return productService.getProducts();
     }
 
     // 상품 상세 조회
+    @Operation(summary = "상품 상세 조회")
     @GetMapping("/{productId}")
     public ProductDetailResponse getProduct(
             @PathVariable Long productId,

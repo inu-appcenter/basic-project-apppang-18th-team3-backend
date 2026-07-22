@@ -1,5 +1,6 @@
 package shop.apppang.domain.auth.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -31,6 +32,7 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @Operation(summary = "회원가입")
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest request){
 
@@ -41,6 +43,7 @@ public class AuthController {
                 .body(response);
     }
 
+    @Operation(summary = "로그인")
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
 
@@ -49,6 +52,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "이메일 중복 확인 (가입 화면 실시간)")
     @GetMapping("/check-email")
     public ResponseEntity<EmailCheckResponse> checkEmail(
             @RequestParam
@@ -59,6 +63,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.checkEmailAvailable(email));
     }
 
+    @Operation(summary = "아이디(이메일) 찾기")
     @PostMapping("/find-email")
     public ResponseEntity<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest request) {
 
@@ -67,6 +72,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "비밀번호 재설정 본인인증")
     @PostMapping("/password-reset-verify")
     public ResponseEntity<PasswordResetVerifyResponse> verifyPasswordReset(@Valid @RequestBody PasswordResetVerifyRequest request) {
 
@@ -75,6 +81,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "비밀번호 재설정")
     @PostMapping("/reset-password")
     public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
 
@@ -83,6 +90,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<LogoutResponse> logout() {
 

@@ -1,5 +1,6 @@
 package shop.apppang.domain.wishlist.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,11 +17,13 @@ public class WishlistController {
 
     private final WishlistService wishlistService;
 
+    @Operation(summary = "내 찜 목록")
     @GetMapping
     public ResponseEntity<List<WishlistResponse>> getWishlist(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(wishlistService.getWishlist(userId));
     }
 
+    @Operation(summary = "찜하기")
     @PostMapping
     public ResponseEntity<WishlistResponse> addWishlist(
             @AuthenticationPrincipal Long userId,
@@ -28,6 +31,7 @@ public class WishlistController {
         return ResponseEntity.status(201).body(wishlistService.addWishlist(userId, request.productId()));
     }
 
+    @Operation(summary = "찜 해제")
     @DeleteMapping("/{productId}")
     public ResponseEntity<Void> removeWishlist(
             @AuthenticationPrincipal Long userId,

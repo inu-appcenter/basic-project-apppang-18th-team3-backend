@@ -1,5 +1,6 @@
 package shop.apppang.domain.review.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ public class ReviewController {
 
 
     // 리뷰 작성
+    @Operation(summary = "리뷰 작성 (구매자만)")
     @PostMapping("/{productId}/reviews")
     public ResponseEntity<ReviewCreateResponse> createReview(
             @PathVariable Long productId,
@@ -48,6 +50,7 @@ public class ReviewController {
 
 
     // 리뷰 목록 조회
+    @Operation(summary = "상품 리뷰 목록 조회")
     @GetMapping("/{productId}/reviews")
     public ResponseEntity<ReviewListResponse> getReviews(
             @PathVariable Long productId,

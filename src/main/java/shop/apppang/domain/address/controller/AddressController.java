@@ -1,5 +1,6 @@
 package shop.apppang.domain.address.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import shop.apppang.domain.address.dto.AddressRequest;
 import shop.apppang.domain.address.dto.AddressResponse;
@@ -17,12 +18,14 @@ public class AddressController {
     private final AddressService addressService;
 
     // 배송지 목록 조회  →  GET /api/addresses?userId=1
+    @Operation(summary = "내 배송지 목록")
     @GetMapping
     public ResponseEntity<List<AddressResponse>> getAddresses(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(addressService.getAddresses(userId));
     }
 
     // 배송지 추가  →  POST /api/addresses?userId=1  (body: 배송지 정보)
+    @Operation(summary = "배송지 추가")
     @PostMapping
     public ResponseEntity<AddressResponse> addAddress(
             @AuthenticationPrincipal Long userId,
@@ -31,6 +34,7 @@ public class AddressController {
     }
 
     // 배송지 수정  →  PATCH /api/addresses/3?userId=1
+    @Operation(summary = "배송지 수정")
     @PatchMapping("/{addressId}")
     public ResponseEntity<AddressResponse> updateAddress(
             @AuthenticationPrincipal Long userId,
@@ -40,6 +44,7 @@ public class AddressController {
     }
 
     // 배송지 삭제  →  DELETE /api/addresses/3?userId=1
+    @Operation(summary = "배송지 삭제")
     @DeleteMapping("/{addressId}")
     public ResponseEntity<Void> deleteAddress(
             @AuthenticationPrincipal Long userId,
