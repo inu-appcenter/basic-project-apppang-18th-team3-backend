@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.product.dto.ProductDetailResponse;
 import shop.apppang.domain.product.dto.ProductListResponse;
@@ -38,10 +38,8 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ProductDetailResponse getProduct(
             @Parameter(description = "상품 ID", required = true) @PathVariable Long productId,
-            Authentication authentication
+            @AuthenticationPrincipal Long userId
     ) {
-
-        Long userId = (Long) authentication.getPrincipal();
 
         return productService.getProduct(userId, productId);
     }
