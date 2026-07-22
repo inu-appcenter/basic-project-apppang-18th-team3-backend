@@ -12,11 +12,12 @@ import shop.apppang.domain.category.entity.CategoryEntity;
 import java.time.LocalDateTime;
 
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "products")
 public class ProductEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +26,7 @@ public class ProductEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
-    @Column(nullable = true, length = 100)
+    @Column(length = 100)
     private String brand;
 
     @Column(nullable = false, length = 255)
@@ -34,39 +35,57 @@ public class ProductEntity {
     @Column(nullable = false)
     private Long price;
 
-    @Column(nullable = true)
     private Long originalPrice;
 
-    @Column(nullable = true)
     private Integer stock;
 
-    @Column(nullable = true, length = 255)
+    @Column(length = 255)
     private String optionInfo;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = true, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String detailContent;
 
-    @Column(nullable = true, length = 255)
+    @Column(length = 255)
     private String shippingInfo;
 
-    @Column(nullable = true)
     private Boolean rocketDelivery;
 
-    @Column(nullable = true)
     private Boolean isActive;
+
+    @Column(length = 255)
+    private String unitPrice;
+
+    @Column(nullable = false)
+    private Long salesCount;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public ProductEntity(CategoryEntity category, String brand, String name, Long price, Long originalPrice, Integer stock, String optionInfo, String description, String detailContent, String shippingInfo, Boolean rocketDelivery, Boolean isActive) {
+    public ProductEntity(
+            CategoryEntity category,
+            String brand,
+            String name,
+            String unitPrice,
+            Long price,
+            Long originalPrice,
+            Integer stock,
+            String optionInfo,
+            String description,
+            String detailContent,
+            String shippingInfo,
+            Boolean rocketDelivery,
+            Boolean isActive,
+            Long salesCount
+    ) {
         this.category = category;
         this.brand = brand;
         this.name = name;
+        this.unitPrice = unitPrice;
         this.price = price;
         this.originalPrice = originalPrice;
         this.stock = stock;
@@ -76,5 +95,14 @@ public class ProductEntity {
         this.shippingInfo = shippingInfo;
         this.rocketDelivery = rocketDelivery;
         this.isActive = isActive;
+        this.salesCount = (salesCount != null) ? salesCount : 0L;
+    }
+
+    public void decreaseStock(int amount) {
+        this.stock -= amount;
+    }
+
+    public void increaseStock(int amount) {
+        this.stock += amount;
     }
 }
