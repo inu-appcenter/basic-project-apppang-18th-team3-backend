@@ -1,5 +1,12 @@
 package shop.apppang.domain.search.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +24,7 @@ import shop.apppang.domain.search.dto.SearchHistoryListResponse;
 import shop.apppang.domain.search.dto.SearchHistoryRequest;
 import shop.apppang.domain.search.dto.SearchSuggestionResponse;
 import shop.apppang.domain.search.service.SearchService;
+import shop.apppang.global.exception.ErrorResponse;
 
 @Validated
 @RestController
@@ -26,13 +34,25 @@ public class SearchController {
 
     private final SearchService searchService;
 
+    @Operation(summary = "검색어 자동완성")
     @GetMapping("/search/suggestions")
-    public SearchSuggestionResponse getSuggestions(@RequestParam(required = false, defaultValue = "") String keyword) {
+    public SearchSuggestionResponse getSuggestions(
+            @Parameter(description = "자동완성 검색어", example = "티")
+            @RequestParam(required = false, defaultValue = "") String keyword) {
 
         return searchService.getSuggestions(keyword);
 
     }
 
+    @Operation(summary = "검색어 저장")
+    @ApiResponses({
+            @ApiResponse(responseCode = "400", description = "검색어 누락 / 50자 초과 중 하나",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"검색어를 입력해주세요.\"}"))),
+            @ApiResponse(responseCode = "401", description = "로그인 필요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"로그인이 필요합니다.\"}")))
+    })
     @PostMapping("/search/history")
     public ResponseEntity<Void> saveHistory(@AuthenticationPrincipal Long userId,
                                              @Valid @RequestBody SearchHistoryRequest request) {
@@ -43,6 +63,10 @@ public class SearchController {
 
     }
 
+    @Operation(summary = "검색어 조회")
+    @ApiResponse(responseCode = "401", description = "로그인 필요",
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                    examples = @ExampleObject(value = "{\"error\": \"로그인이 필요합니다.\"}")))
     @GetMapping("/search/history")
     public SearchHistoryListResponse getHistories(@AuthenticationPrincipal Long userId) {
 
@@ -50,8 +74,18 @@ public class SearchController {
 
     }
 
+    @Operation(summary = "검색어 삭제")
+    @ApiResponses({
+            @ApiResponse(responseCode = "400", description = "keyword 누락",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"keyword는 빈 값일 수 없습니다.\"}"))),
+            @ApiResponse(responseCode = "401", description = "인증 필요",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"인증이 필요합니다.\"}")))
+    })
     @DeleteMapping("/search/history")
     public ResponseEntity<Void> deleteHistory(@AuthenticationPrincipal Long userId,
+                                               @Parameter(description = "삭제할 검색어", required = true)
                                                @RequestParam @NotBlank(message = "keyword는 빈 값일 수 없습니다.") String keyword) {
 
         searchService.deleteHistory(userId, keyword);
