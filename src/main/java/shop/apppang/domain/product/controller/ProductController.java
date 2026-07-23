@@ -1,13 +1,14 @@
 package shop.apppang.domain.product.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.product.dto.ProductDetailResponse;
 import shop.apppang.domain.product.dto.ProductListResponse;
 import shop.apppang.domain.product.service.ProductService;
-import org.springframework.data.domain.Pageable;
-
 
 @RestController
 @RequestMapping("/api/products")
@@ -16,55 +17,41 @@ public class ProductController {
 
     private final ProductService productService;
 
-    // 1. 상품 목록 조회 (필터링 및 페이징 파라미터 수용)
     @GetMapping
-    public ProductListResponse getProducts(
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) String keyword,
-            Pageable pageable
+    public ResponseEntity<ProductListResponse> getProducts(
+            @RequestParam(name = "category_id", required = false) Long categoryId,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "min_price", required = false) Long minPrice,
+            @RequestParam(name = "max_price", required = false) Long maxPrice,
+            @RequestParam(name = "rocket_delivery", required = false) Boolean rocketDelivery,
+            @RequestParam(name = "sort", defaultValue = "sales") String sort,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size
     ) {
-        return productService.getProducts(categoryId, keyword, pageable);
+        // 프론트엔드의 1-based page를 Spring Data JPA의 0-based page로 전환
+        int pageNumber = Math.max(0, page - 1);
+
+        // 명세서의 sort 조건(sales, reviews, rating, price_desc, price_asc) 정렬 매핑
+        Sort sortOrder = switch (sort) {
+            case "price_asc" -> Sort.by("price").ascending();
+            case "price_desc" -> Sort.by("price").descending();
+            case "sales" -> Sort.by("salesCount").descending();
+            default -> Sort.by("id").descending();
+        };
+
+        Pageable pageable = PageRequest.of(pageNumber, size, sortOrder);
+
+        ProductListResponse response = productService.getProducts(
+                categoryId, keyword, minPrice, maxPrice, rocketDelivery, sort, page, size, pageable
+        );
+        return ResponseEntity.ok(response);
     }
 
-    // 2. 추천 상품 목록 조회 (선택적 인증)
-    @GetMapping("/recommended")
-    public Object getRecommendedProducts(
-            Authentication authentication,
-            @RequestParam(value = "size", defaultValue = "10") int size
+    @GetMapping("/{product_id}")
+    public ResponseEntity<ProductDetailResponse> getProduct(
+            @RequestAttribute(name = "userId", required = false) Long userId,
+            @PathVariable("product_id") Long productId
     ) {
-        Long userId = extractUserId(authentication);
-        return productService.getRecommendedProducts(userId, size);
-    }
-
-    // 3. 인기 상품 목록 조회 (인증 불필요)
-    @GetMapping("/popular")
-    public Object getPopularProducts(
-            @RequestParam(value = "size", defaultValue = "10") int size
-    ) {
-        return productService.getPopularProducts(size);
-    }
-
-    // 4. 상품 상세 조회 (선택적/필수 인증 - 선택적 처리 가능)
-    @GetMapping("/{productId}")
-    public ProductDetailResponse getProduct(
-            @PathVariable Long productId,
-            Authentication authentication
-    ) {
-        Long userId = extractUserId(authentication);
-        return productService.getProduct(userId, productId);
-    }
-
-    private Long extractUserId(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
-        }
-
-        Object principal = authentication.getPrincipal();
-
-        if (principal instanceof Long) {
-            return (Long) principal;
-        }
-
-        return null;
+        return ResponseEntity.ok(productService.getProduct(userId, productId));
     }
 }

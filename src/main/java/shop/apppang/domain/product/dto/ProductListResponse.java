@@ -1,28 +1,25 @@
 package shop.apppang.domain.product.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
-public class ProductListResponse {
+public record ProductListResponse(
+        @JsonProperty("category_id")
+        Long categoryId,
 
-    private Long categoryId;
+        @JsonProperty("category_name")
+        String categoryName,
 
-    private String categoryName;
+        String keyword,
 
-    private String keyword;
+        Integer page,
 
-    private Integer page;
+        Integer size,
 
-    private Integer size;
+        Integer total,
 
-    private Integer total;
+        @JsonProperty("has_next")
+        Boolean hasNext,
 
-    private Boolean hasNext;
-
-    private List<ProductItemResponse> items;
-
-}
+        List<ProductItemResponse> items
+) {}

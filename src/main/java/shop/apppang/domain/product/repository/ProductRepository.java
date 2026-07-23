@@ -11,22 +11,22 @@ import java.util.List;
 
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
-    List<ProductEntity> findTop10ByNameStartingWithIgnoreCaseAndIsActiveTrueOrderByIdDesc(String keyword);
+    // 1. 검색어 자동완성용 메서드 (Top 10)
+    List<ProductEntity> findTop10ByNameStartingWithIgnoreCaseAndActiveTrueOrderByIdDesc(String name);
 
-    // 추천 상품 검색용
-    List<ProductEntity> findTop20ByNameContainingIgnoreCaseAndIsActiveTrueOrderByIdAsc(String keyword);
-
-    // 인기 상품 조회용
-    List<ProductEntity> findTop20ByIsActiveTrueOrderBySalesCountDesc();
-
-    @Query("SELECT p FROM ProductEntity p WHERE " +
-            "(:categoryId IS NULL OR p.category.id = :categoryId) AND " +
-            "(:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-            "(p.isActive = true)")
+    // 2. 상품 목록 필터링 및 페이징 조회 (Sort는 Pageable 객체로 자동 처리)
+    @Query("SELECT p FROM ProductEntity p " +
+            "WHERE (:categoryId IS NULL OR p.category.id = :categoryId) " +
+            "AND (:keyword IS NULL OR p.name LIKE CONCAT('%', :keyword, '%')) " +
+            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
+            "AND (:rocketDelivery IS NULL OR p.rocketDelivery = :rocketDelivery)")
     Page<ProductEntity> findProductsWithFilters(
             @Param("categoryId") Long categoryId,
             @Param("keyword") String keyword,
+            @Param("minPrice") Long minPrice,
+            @Param("maxPrice") Long maxPrice,
+            @Param("rocketDelivery") Boolean rocketDelivery,
             Pageable pageable
     );
-
 }
