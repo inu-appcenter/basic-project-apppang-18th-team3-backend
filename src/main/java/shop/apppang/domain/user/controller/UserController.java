@@ -33,6 +33,11 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "내 정보 조회")
+    @ApiResponse(responseCode = "200", description = "내 정보 조회 성공",
+            content = @Content(schema = @Schema(implementation = UserMeResponse.class),
+                    examples = @ExampleObject(value = """
+                            { "userId": 1, "email": "a@a.com", "name": "고명재", "phoneNumber": "01012345678", "appMoney": 15000, "createdAt": "2026-01-01T00:00:00" }
+                            """)))
     @GetMapping("/me")
     public UserMeResponse getMe(@AuthenticationPrincipal Long userId) {
         return userService.getMyInfo(userId);
@@ -40,6 +45,11 @@ public class UserController {
 
     @Operation(summary = "내 정보 수정")
     @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "내 정보 수정 성공",
+                    content = @Content(schema = @Schema(implementation = UserResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "userId": 1, "email": "new@a.com", "name": "고명재", "phoneNumber": "01012345678" }
+                                    """))),
             @ApiResponse(responseCode = "400", description = "이름 공백 / 이메일 형식 오류 / 휴대폰 형식 오류 중 하나",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"올바른 이메일 형식을 입력해주세요\"}"))),
@@ -55,6 +65,9 @@ public class UserController {
 
     @Operation(summary = "비밀번호 변경 (마이페이지)")
     @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공",
+                    content = @Content(schema = @Schema(implementation = ChangePasswordResponse.class),
+                            examples = @ExampleObject(value = "{\"message\": \"비밀번호가 변경되었습니다\"}"))),
             @ApiResponse(responseCode = "400", description = "필드 누락 / 새 비밀번호 형식 오류 중 하나",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"현재/새 비밀번호를 입력해주세요.\"}"))),
@@ -68,6 +81,11 @@ public class UserController {
         return userService.changePassword(userId, request);
     }
     @Operation(summary = "최근 찾던 상품 조회")
+    @ApiResponse(responseCode = "200", description = "최근 찾던 상품 조회 성공",
+            content = @Content(schema = @Schema(implementation = RecentProductResponse.class),
+                    examples = @ExampleObject(value = """
+                            { "items": [ { "productId": 5, "name": "여름 티셔츠", "imageUrl": "https://.../5.jpg", "price": 12000 } ] }
+                            """)))
     @GetMapping("/recent-products")
     public RecentProductResponse getRecentProducts(@AuthenticationPrincipal Long userId) {
 

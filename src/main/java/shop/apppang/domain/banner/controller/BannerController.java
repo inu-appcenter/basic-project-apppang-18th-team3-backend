@@ -1,6 +1,10 @@
 package shop.apppang.domain.banner.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +24,13 @@ public class BannerController {
     private final BannerService bannerService;
 
     @Operation(summary = "메인 배너 목록 조회")
+    @ApiResponse(responseCode = "200", description = "배너 목록",
+            content = @Content(schema = @Schema(implementation = BannerResponse.class),
+                    examples = @ExampleObject(value = """
+                            [
+                              { "id": 1, "imageUrl": "https://.../banner1.jpg", "linkUrl": "/products/5", "displayOrder": 1 }
+                            ]
+                            """)))
     @GetMapping("/banners")
     public List<BannerResponse> getBanners() {
 

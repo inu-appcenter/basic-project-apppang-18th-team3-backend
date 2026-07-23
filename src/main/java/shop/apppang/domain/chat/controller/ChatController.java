@@ -31,6 +31,11 @@ public class ChatController {
     // 채팅 — 비로그인도 가능, 로그인 시 기록 저장
     @Operation(summary = "챗봇 메시지 전송 (자연어 → 상품 추천)")
     @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "응답 성공 (조건에 맞는 상품이 없으면 products: [])",
+                    content = @Content(schema = @Schema(implementation = ChatResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "sessionId": "abc123", "reply": "2만원 이하 로켓배송 커피를 찾아봤어요. 이런 상품은 어떠세요?" }
+                                    """))),
             @ApiResponse(responseCode = "400", description = "빈 메시지",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"메시지를 입력해주세요\"}"))),
@@ -47,6 +52,14 @@ public class ChatController {
 
     // 대화 기록 조회 — 로그인 필수
     @Operation(summary = "이전 대화 목록 조회")
+    @ApiResponse(responseCode = "200", description = "대화 기록 조회 성공",
+            content = @Content(schema = @Schema(implementation = ChatHistoryResponse.class),
+                    examples = @ExampleObject(value = """
+                            [
+                              { "sessionId": "abc123", "role": "user", "message": "2만원 이하 커피 추천", "createdAt": "2026-06-23T10:00:00" },
+                              { "sessionId": "abc123", "role": "bot", "message": "이런 상품은 어떠세요?", "createdAt": "2026-06-23T10:00:01" }
+                            ]
+                            """)))
     @GetMapping("/history")
     public ResponseEntity<List<ChatHistoryResponse>> history(
             @AuthenticationPrincipal Long userId) {

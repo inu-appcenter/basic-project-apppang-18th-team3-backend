@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,9 +30,16 @@ public class ReviewController {
 
     // 리뷰 작성 (텍스트 + 이미지 파일을 한 번에)
     @Operation(summary = "리뷰 작성 (구매자만)")
-    @ApiResponse(responseCode = "403", description = "구매하지 않은 상품에 대한 리뷰 작성 시도",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
-                    examples = @ExampleObject(value = "{\"error\": \"구매한 상품만 리뷰를 작성할 수 있습니다\"}")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "리뷰 작성 성공",
+                    content = @Content(schema = @Schema(implementation = ReviewCreateResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "reviewId": 7, "rating": 5, "title": "재구매 의사 있어요" }
+                                    """))),
+            @ApiResponse(responseCode = "403", description = "구매하지 않은 상품에 대한 리뷰 작성 시도",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"구매한 상품만 리뷰를 작성할 수 있습니다\"}")))
+    })
     @PostMapping(value = "/{productId}/reviews", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ReviewCreateResponse> createReview(
             @AuthenticationPrincipal Long userId,
@@ -44,6 +52,28 @@ public class ReviewController {
 
     // 리뷰 목록 조회
     @Operation(summary = "상품 리뷰 목록 조회")
+    @ApiResponse(responseCode = "200", description = "리뷰 목록 조회 성공 (없으면 items: [], reviewCount: 0)",
+            content = @Content(schema = @Schema(implementation = ReviewListResponse.class),
+                    examples = @ExampleObject(value = """
+                            {
+                              "productName": "여름 티셔츠",
+                              "averageRating": 4.3,
+                              "reviewCount": 28,
+                              "page": 1,
+                              "total": 12,
+                              "items": [
+                                {
+                                  "reviewId": 7,
+                                  "userName": "고",
+                                  "rating": 5,
+                                  "title": "재구매 의사 있어요",
+                                  "content": "배송 빠르고 좋아요",
+                                  "createdAt": "2026-06-10T11:00:00",
+                                  "images": ["https://.../r1.jpg"]
+                                }
+                              ]
+                            }
+                            """)))
     @GetMapping("/{productId}/reviews")
     public ResponseEntity<ReviewListResponse> getReviews(
             @Parameter(description = "상품 ID", required = true) @PathVariable Long productId,

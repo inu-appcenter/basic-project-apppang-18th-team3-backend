@@ -28,15 +28,33 @@ public class CartController {
     private final CartService cartService;
 
     @Operation(summary = "내 장바구니 조회")
+    @ApiResponse(responseCode = "200", description = "장바구니 조회 성공 (비어 있으면 items: [], itemCount: 0)",
+            content = @Content(schema = @Schema(implementation = CartResponse.class),
+                    examples = @ExampleObject(value = """
+                            {
+                              "itemCount": 1,
+                              "totalPrice": 24000,
+                              "items": [
+                                { "cartItemId": 10, "productId": 5, "productName": "여름 티셔츠", "price": 12000, "quantity": 2, "subtotal": 24000 }
+                              ]
+                            }
+                            """)))
     @GetMapping
     public ResponseEntity<CartResponse> getCart(@AuthenticationPrincipal Long userId) {
         return ResponseEntity.ok(cartService.getCart(userId));
     }
 
     @Operation(summary = "장바구니 담기")
-    @ApiResponse(responseCode = "409", description = "기존 담긴 수량과 합산한 결과가 재고를 초과",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
-                    examples = @ExampleObject(value = "{\"error\": \"재고가 부족합니다\"}")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "담기 성공 (이미 담긴 수량과 합산됨)",
+                    content = @Content(schema = @Schema(implementation = CartItemResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "cartItemId": 10, "productId": 5, "productName": "여름 티셔츠", "price": 12000, "quantity": 5, "subtotal": 60000 }
+                                    """))),
+            @ApiResponse(responseCode = "409", description = "기존 담긴 수량과 합산한 결과가 재고를 초과",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"재고가 부족합니다\"}")))
+    })
     @PostMapping
     public ResponseEntity<CartItemResponse> addToCart(
             @AuthenticationPrincipal Long userId,
@@ -47,6 +65,11 @@ public class CartController {
 
     @Operation(summary = "장바구니 수량 변경")
     @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "수량 변경 성공",
+                    content = @Content(schema = @Schema(implementation = CartItemResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "cartItemId": 10, "productId": 5, "productName": "여름 티셔츠", "price": 12000, "quantity": 3, "subtotal": 36000 }
+                                    """))),
             @ApiResponse(responseCode = "400", description = "수량 1개 미만",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"수량은 1개 이상이어야 합니다\"}"))),
@@ -63,6 +86,7 @@ public class CartController {
     }
 
     @Operation(summary = "장바구니 항목 삭제")
+    @ApiResponse(responseCode = "204", description = "삭제 성공 (본문 없음)")
     @DeleteMapping("/{cartItemId}")
     public ResponseEntity<Void> deleteCartItem(
             @AuthenticationPrincipal Long userId,
