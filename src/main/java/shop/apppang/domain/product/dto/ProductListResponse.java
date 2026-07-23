@@ -1,28 +1,21 @@
 package shop.apppang.domain.product.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
-public class ProductListResponse {
+public record ProductListResponse(
+        Long categoryId,
 
-    private Long categoryId;
+        String categoryName,
 
-    private String categoryName;
+        String keyword,
 
-    private String keyword;
+        Integer page,
 
-    private Integer page;
+        Integer size,
 
-    private Integer size;
+        Integer total,
 
-    private Integer total;
+        Boolean hasNext,
 
-    private Boolean hasNext;
-
-    private List<ProductItemResponse> items;
-
-}
+        List<ProductItemResponse> items
+) {}
