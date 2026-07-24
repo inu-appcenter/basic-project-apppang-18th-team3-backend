@@ -25,7 +25,22 @@ public class ProductController {
     private final ProductService productService;
 
     // 상품 목록 조회
-    @Operation(summary = "상품 목록 조회 (카테고리·검색, 필터, 정렬·페이지 공용)")
+    @Operation(
+            summary = "상품 목록 조회 (카테고리·검색, 필터, 정렬·페이지 공용)",
+            description = """
+                카테고리 ID 목록<br>
+                1 : 식품<br>
+                2 : 생활용품<br>
+                3 : 뷰티<br>
+                4 : 의류 및 잡화<br>
+                5 : 가전 및 디지털<br>
+                6 : 홈인테리어<br>
+                7 : 출산 및 유아<br>
+                8 : 반려동물<br>
+                9 : 스포츠 및 레저<br>
+                10 : 자동차용품
+                """
+    )
     @ApiResponse(responseCode = "200", description = "상품 목록 조회 성공 (결과 없으면 items: [], total: 0)",
             content = @Content(schema = @Schema(implementation = ProductListResponse.class),
                     examples = @ExampleObject(value = """
@@ -61,7 +76,22 @@ public class ProductController {
     }
 
     // 상품 상세 조회
-    @Operation(summary = "상품 상세 조회")
+    @Operation(
+            summary = "상품 상세 조회",
+            description = """
+                카테고리 ID 목록<br>
+                1 : 식품<br>
+                2 : 생활용품<br>
+                3 : 뷰티<br>
+                4 : 의류 및 잡화<br>
+                5 : 가전 및 디지털<br>
+                6 : 홈인테리어<br>
+                7 : 출산 및 유아<br>
+                8 : 반려동물<br>
+                9 : 스포츠 및 레저<br>
+                10 : 자동차용품
+                """
+    ) // description은 markdown 형식을 지원하지만 가끔 렌더링 오류가 있다고 해서 HTML 태그 사용
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "상품 상세 조회 성공",
                     content = @Content(schema = @Schema(implementation = ProductDetailResponse.class),
