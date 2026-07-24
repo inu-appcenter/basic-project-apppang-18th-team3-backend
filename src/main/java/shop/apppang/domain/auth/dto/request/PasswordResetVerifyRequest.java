@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.apppang.global.validation.ValidationPatterns;
 
 @Getter
 @NoArgsConstructor
@@ -20,8 +21,8 @@ public class PasswordResetVerifyRequest {
     @NotBlank(message = "이름은 필수입니다")
     private String name;
 
-    @Schema(description = "휴대폰 번호", example = "01012345678")
+    @Schema(description = "휴대폰 번호 (하이픈 없이 숫자만)", example = "01012345678")
     @NotBlank(message = "휴대폰 번호 형식이 올바르지 않습니다")
-    @Pattern(regexp = "^01[016789]\\d{7,8}$", message = "휴대폰 번호 형식이 올바르지 않습니다")
+    @Pattern(regexp = ValidationPatterns.PHONE_NUMBER, message = ValidationPatterns.PHONE_NUMBER_MESSAGE)
     private String phoneNumber;
 }

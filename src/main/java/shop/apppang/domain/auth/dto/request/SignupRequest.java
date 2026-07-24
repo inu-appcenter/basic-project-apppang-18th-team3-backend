@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.apppang.global.validation.ValidationPatterns;
 
 // SignupRequest.java
 @Getter
@@ -18,11 +19,11 @@ public class SignupRequest {
     @Email(message = "올바른 이메일 형식을 입력해주세요.")
     private String email;
 
-    @Schema(description = "비밀번호 (8자 이상, 영문+숫자 조합)", example = "abcd1234")
+    @Schema(description = "비밀번호 (8~20자, 영문+숫자 조합)", example = "abcd1234")
     @NotBlank(message = "비밀번호를 입력해주세요.")
     @Pattern(
-            regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$",
-            message = "비밀번호는 8자 이상, 영문+숫자 조합이어야 합니다."
+            regexp = ValidationPatterns.PASSWORD,
+            message = ValidationPatterns.PASSWORD_MESSAGE
     )
     private String password;
 
@@ -30,8 +31,9 @@ public class SignupRequest {
     @NotBlank(message = "이름을 입력해주세요.")
     private String name;
 
-    @Schema(description = "전화번호", example = "01012345678")
+    @Schema(description = "전화번호 (하이픈 없이 숫자만)", example = "01012345678")
     @NotBlank(message = "전화번호를 입력해주세요.")
+    @Pattern(regexp = ValidationPatterns.PHONE_NUMBER, message = ValidationPatterns.PHONE_NUMBER_MESSAGE)
     private String phoneNumber;
 
     @Schema(description = "필수 약관 동의 여부", example = "true")
