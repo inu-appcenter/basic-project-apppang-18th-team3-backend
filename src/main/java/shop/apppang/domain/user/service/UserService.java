@@ -22,7 +22,7 @@ import shop.apppang.domain.product.repository.ProductImageRepository;
 import shop.apppang.domain.product.repository.ProductRepository;
 import shop.apppang.domain.search.entity.SearchHistory;
 import shop.apppang.domain.search.repository.SearchHistoryRepository;
-import shop.apppang.domain.user.dto.RecentProductResponse;
+import shop.apppang.domain.user.dto.response.RecentProductResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
