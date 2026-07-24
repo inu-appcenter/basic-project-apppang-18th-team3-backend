@@ -39,6 +39,7 @@ public class AuthService {
 
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$");
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -167,9 +168,27 @@ public class AuthService {
                 .build();
     }
 
-    public LogoutResponse logout() {
+    public LogoutResponse logout(String authorizationHeader) {
+        String accessToken = stripBearerPrefix(authorizationHeader);
+
+        // /api/auth/logout은 SecurityConfig에서 인증을 요구하므로, 여기 도달했다면 이미 유효한 토큰이다.
+        JwtTokenProvider.AccessTokenClaims claims = jwtTokenProvider.validateAccessTokenAndGetClaims(accessToken);
+
+        long remainingMillis = claims.expiration().getTime() - System.currentTimeMillis();
+        if (remainingMillis > 0) {
+            tokenRedisRepository.blacklistAccessToken(claims.jti(), Duration.ofMillis(remainingMillis));
+        }
+        tokenRedisRepository.deleteRefreshToken(claims.userId());
+
         return LogoutResponse.builder()
                 .message("로그아웃되었습니다")
                 .build();
+    }
+
+    private String stripBearerPrefix(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
+            return authorizationHeader.substring(BEARER_PREFIX.length());
+        }
+        return authorizationHeader;
     }
 }

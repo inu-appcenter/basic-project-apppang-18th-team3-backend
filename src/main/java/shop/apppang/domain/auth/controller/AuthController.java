@@ -170,13 +170,14 @@ public class AuthController {
     }
 
     @Operation(summary = "로그아웃")
-    @ApiResponse(responseCode = "200", description = "로그아웃 성공",
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공 (액세스 토큰은 남은 만료시간만큼 블랙리스트 처리되고, 리프레시 토큰은 즉시 폐기됨)",
             content = @Content(schema = @Schema(implementation = LogoutResponse.class),
                     examples = @ExampleObject(value = "{\"message\": \"로그아웃되었습니다\"}")))
     @PostMapping("/logout")
-    public ResponseEntity<LogoutResponse> logout() {
+    public ResponseEntity<LogoutResponse> logout(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String authorizationHeader) {
 
-        LogoutResponse response = authService.logout();
+        LogoutResponse response = authService.logout(authorizationHeader);
 
         return ResponseEntity.ok(response);
     }
