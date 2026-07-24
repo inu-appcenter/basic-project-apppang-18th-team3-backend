@@ -26,7 +26,7 @@ public class AddressService {
     // ② 추가
     @Transactional
     public AddressResponse addAddress(Long userId, AddressRequest req) {
-        if (Boolean.TRUE.equals(req.isDefault())) {
+        if (Boolean.TRUE.equals(req.isDefaultAddress())) {
             unsetOtherDefaults(userId);       // 새 기본배송지면 기존 기본 해제
         }
         AddressEntity address = AddressEntity.builder()
@@ -38,7 +38,7 @@ public class AddressService {
                 .detailAddress(req.detailAddress())
                 .normalDeliveryRequest(req.normalDeliveryRequest())
                 .rocketDeliveryRequest(req.rocketDeliveryRequest())
-                .isDefault(Boolean.TRUE.equals(req.isDefault()))
+                .isDefaultAddress(Boolean.TRUE.equals(req.isDefaultAddress()))
                 .build();
         return AddressResponse.from(addressRepository.save(address));
     }
@@ -47,12 +47,12 @@ public class AddressService {
     @Transactional
     public AddressResponse updateAddress(Long userId, Long addressId, AddressRequest req) {
         AddressEntity address = findMyAddress(userId, addressId);
-        if (Boolean.TRUE.equals(req.isDefault())) {
+        if (Boolean.TRUE.equals(req.isDefaultAddress())) {
             unsetOtherDefaults(userId);
         }
         address.update(req.recipientName(), req.phone(), req.zipcode(),
                 req.address(), req.detailAddress(),
-                req.normalDeliveryRequest(), req.rocketDeliveryRequest(), req.isDefault());
+                req.normalDeliveryRequest(), req.rocketDeliveryRequest(), req.isDefaultAddress());
         return AddressResponse.from(address);  // 변경 감지로 자동 UPDATE
     }
 
@@ -74,7 +74,7 @@ public class AddressService {
     }
 
     private void unsetOtherDefaults(Long userId) {
-        addressRepository.findByUserIdAndIsDefaultTrue(userId)
+        addressRepository.findByUserIdAndIsDefaultAddressTrue(userId)
                 .forEach(AddressEntity::unsetDefault);
     }
 }

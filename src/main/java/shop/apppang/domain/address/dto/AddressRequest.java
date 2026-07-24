@@ -10,5 +10,5 @@ public record AddressRequest(
         @Schema(description = "상세 주소", example = "101동 202호") String detailAddress,
         @Schema(description = "일반배송 요청사항", example = "문 앞에 놓아주세요") String normalDeliveryRequest,
         @Schema(description = "로켓배송 요청사항", example = "경비실에 맡겨주세요") String rocketDeliveryRequest,
-        @Schema(description = "기본 배송지 여부", example = "true") Boolean isDefault
+        @Schema(description = "기본 배송지 여부", example = "true") Boolean isDefaultAddress
 ) {}

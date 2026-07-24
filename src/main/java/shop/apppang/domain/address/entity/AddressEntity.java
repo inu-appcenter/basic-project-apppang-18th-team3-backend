@@ -27,20 +27,21 @@ public class AddressEntity {
     private String detailAddress;
     private String normalDeliveryRequest;
     private String rocketDeliveryRequest;
-    private Boolean isDefault;
+    @Column(name = "is_default")     // 필드명은 isDefaultAddress지만 DB 컬럼은 기존 is_default 유지
+    private Boolean isDefaultAddress;
     private LocalDateTime createdAt;
 
     @PrePersist                      // 저장 직전에 자동 실행
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        if (this.isDefault == null) this.isDefault = false;
+        if (this.isDefaultAddress == null) this.isDefaultAddress = false;
     }
 
     // 수정용 메서드 (넘어온 값만 바꿈 = PATCH)
     public void update(String recipientName, String phone, String zipcode,
                        String address, String detailAddress,
                        String normalDeliveryRequest, String rocketDeliveryRequest,
-                       Boolean isDefault) {
+                       Boolean isDefaultAddress) {
         if (recipientName != null) this.recipientName = recipientName;
         if (phone != null) this.phone = phone;
         if (zipcode != null) this.zipcode = zipcode;
@@ -48,8 +49,8 @@ public class AddressEntity {
         if (detailAddress != null) this.detailAddress = detailAddress;
         if (normalDeliveryRequest != null) this.normalDeliveryRequest = normalDeliveryRequest;
         if (rocketDeliveryRequest != null) this.rocketDeliveryRequest = rocketDeliveryRequest;
-        if (isDefault != null) this.isDefault = isDefault;
+        if (isDefaultAddress != null) this.isDefaultAddress = isDefaultAddress;
     }
 
-    public void unsetDefault() { this.isDefault = false; }  // 기본배송지 해제용
+    public void unsetDefault() { this.isDefaultAddress = false; }  // 기본배송지 해제용
 }
