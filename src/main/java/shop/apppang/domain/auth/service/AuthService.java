@@ -25,8 +25,11 @@ import shop.apppang.domain.auth.exception.MemberNotFoundException;
 import shop.apppang.domain.auth.util.EmailMaskingUtil;
 import shop.apppang.domain.user.entity.User;
 import shop.apppang.domain.user.repository.UserRepository;
+import shop.apppang.global.jwt.JwtProperties;
 import shop.apppang.global.jwt.JwtTokenProvider;
+import shop.apppang.global.redis.TokenRedisRepository;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -40,6 +43,8 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProperties jwtProperties;
+    private final TokenRedisRepository tokenRedisRepository;
 
     @Transactional
     public SignupResponse signup(SignupRequest request) {
@@ -124,6 +129,8 @@ public class AuthService {
         ).orElseThrow(() -> new MemberNotFoundException("일치하는 회원 정보를 찾을 수 없습니다."));
 
         String resetToken = jwtTokenProvider.generateResetToken(user.getId());
+        tokenRedisRepository.saveResetToken(
+                resetToken, user.getId(), Duration.ofMillis(jwtProperties.getResetTokenExpiration()));
 
         return PasswordResetVerifyResponse.builder()
                 .resetToken(resetToken)
@@ -140,6 +147,11 @@ public class AuthService {
             throw new InvalidResetTokenException();
         }
 
+        // JWT 자체는 만료 전까지 계속 유효하므로, Redis에 남아있는지로 "아직 쓰지 않은 토큰"인지 별도 확인한다.
+        if (!tokenRedisRepository.existsResetToken(request.getResetToken())) {
+            throw new InvalidResetTokenException();
+        }
+
         User user = userRepository.findById(userId)
                 .orElseThrow(InvalidResetTokenException::new);
 
@@ -148,6 +160,7 @@ public class AuthService {
         }
 
         user.changePassword(passwordEncoder.encode(request.getNewPassword()));
+        tokenRedisRepository.deleteResetToken(request.getResetToken());
 
         return ResetPasswordResponse.builder()
                 .message("비밀번호가 재설정되었습니다")
