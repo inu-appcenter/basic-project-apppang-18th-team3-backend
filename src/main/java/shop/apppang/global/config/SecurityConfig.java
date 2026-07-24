@@ -55,7 +55,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()              // 채팅은 비로그인 허용
                         .requestMatchers(HttpMethod.POST, "/api/auth/logout").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/banners").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(basic -> basic.disable())

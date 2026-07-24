@@ -43,6 +43,11 @@ public class AuthController {
 
     @Operation(summary = "회원가입")
     @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "회원가입 성공",
+                    content = @Content(schema = @Schema(implementation = SignupResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "userId": 1, "email": "a@a.com", "name": "홍길동" }
+                                    """))),
             @ApiResponse(responseCode = "400", description = "이메일 형식 오류 / 비밀번호 형식 오류 / 필수 약관 미동의 중 하나",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"올바른 이메일 형식을 입력해주세요\"}"))),
@@ -62,6 +67,11 @@ public class AuthController {
 
     @Operation(summary = "로그인")
     @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공",
+                    content = @Content(schema = @Schema(implementation = LoginResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "token": "eyJhbGci...", "user": { "userId": 1, "name": "정태영" } }
+                                    """))),
             @ApiResponse(responseCode = "400", description = "이메일/비밀번호 누락",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"이메일과 비밀번호를 입력해주세요\"}"))),
@@ -78,9 +88,14 @@ public class AuthController {
     }
 
     @Operation(summary = "이메일 중복 확인")
-    @ApiResponse(responseCode = "400", description = "이메일 형식 오류 / 이메일 누락 중 하나",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class),
-                    examples = @ExampleObject(value = "{\"error\": \"이메일 형식이 올바르지 않습니다.\"}")))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "확인 성공 (available=false면 이미 사용 중)",
+                    content = @Content(schema = @Schema(implementation = EmailCheckResponse.class),
+                            examples = @ExampleObject(value = "{\"available\": false}"))),
+            @ApiResponse(responseCode = "400", description = "이메일 형식 오류 / 이메일 누락 중 하나",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"이메일 형식이 올바르지 않습니다.\"}")))
+    })
     @GetMapping("/check-email")
     public ResponseEntity<EmailCheckResponse> checkEmail(
             @Parameter(description = "중복 확인할 이메일", required = true, example = "a@a.com")
@@ -94,6 +109,11 @@ public class AuthController {
 
     @Operation(summary = "아이디(이메일) 찾기")
     @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "찾기 성공 (마스킹된 이메일 목록)",
+                    content = @Content(schema = @Schema(implementation = FindEmailResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "emails": ["rha*@gmail.com", "kim*@naver.com"] }
+                                    """))),
             @ApiResponse(responseCode = "400", description = "이름 누락 / 전화번호 형식 오류 중 하나",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"이름을 입력해주세요\"}"))),
@@ -111,6 +131,9 @@ public class AuthController {
 
     @Operation(summary = "비밀번호 재설정 본인인증")
     @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "본인인증 성공 (재설정용 임시 토큰, 만료 15분)",
+                    content = @Content(schema = @Schema(implementation = PasswordResetVerifyResponse.class),
+                            examples = @ExampleObject(value = "{\"resetToken\": \"tmp_eyJ...\"}"))),
             @ApiResponse(responseCode = "400", description = "이메일 형식 오류 / 휴대폰 번호 형식 오류 / 이름 누락 중 하나",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"이메일 형식이 올바르지 않습니다\"}"))),
@@ -128,6 +151,9 @@ public class AuthController {
 
     @Operation(summary = "비밀번호 재설정")
     @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "비밀번호 재설정 성공",
+                    content = @Content(schema = @Schema(implementation = ResetPasswordResponse.class),
+                            examples = @ExampleObject(value = "{\"message\": \"비밀번호가 재설정되었습니다\"}"))),
             @ApiResponse(responseCode = "400", description = "비밀번호 형식 오류",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"비밀번호는 8자 이상, 영문+숫자 조합이어야 합니다\"}"))),
@@ -144,6 +170,9 @@ public class AuthController {
     }
 
     @Operation(summary = "로그아웃")
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공",
+            content = @Content(schema = @Schema(implementation = LogoutResponse.class),
+                    examples = @ExampleObject(value = "{\"message\": \"로그아웃되었습니다\"}")))
     @PostMapping("/logout")
     public ResponseEntity<LogoutResponse> logout() {
 
