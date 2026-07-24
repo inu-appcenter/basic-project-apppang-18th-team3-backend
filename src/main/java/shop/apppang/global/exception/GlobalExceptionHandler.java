@@ -9,7 +9,6 @@
     import org.springframework.web.bind.annotation.RestControllerAdvice;
     import org.springframework.web.server.ResponseStatusException;
     import shop.apppang.domain.auth.exception.InvalidCredentialsException;
-    import shop.apppang.domain.auth.exception.InvalidPasswordFormatException;
     import shop.apppang.domain.auth.exception.InvalidRefreshTokenException;
     import shop.apppang.domain.auth.exception.InvalidResetTokenException;
     import shop.apppang.domain.auth.exception.MemberNotFoundException;
@@ -64,14 +63,6 @@
 
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED) // 401
-                    .body(new ErrorResponse(e.getMessage()));
-        }
-
-        @ExceptionHandler(InvalidPasswordFormatException.class)
-        public ResponseEntity<ErrorResponse> handleInvalidPasswordFormat(InvalidPasswordFormatException e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST) // 400
                     .body(new ErrorResponse(e.getMessage()));
         }
 

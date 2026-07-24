@@ -21,7 +21,6 @@ import shop.apppang.domain.auth.dto.response.ResetPasswordResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.exception.DuplicateEmailException;
 import shop.apppang.domain.auth.exception.InvalidCredentialsException;
-import shop.apppang.domain.auth.exception.InvalidPasswordFormatException;
 import shop.apppang.domain.auth.exception.InvalidRefreshTokenException;
 import shop.apppang.domain.auth.exception.InvalidResetTokenException;
 import shop.apppang.domain.auth.exception.MemberNotFoundException;
@@ -34,14 +33,11 @@ import shop.apppang.global.redis.TokenRedisRepository;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private static final Pattern PASSWORD_PATTERN =
-            Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$");
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final UserRepository userRepository;
@@ -194,10 +190,6 @@ public class AuthService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(InvalidResetTokenException::new);
-
-        if (request.getNewPassword() == null || !PASSWORD_PATTERN.matcher(request.getNewPassword()).matches()) {
-            throw new InvalidPasswordFormatException();
-        }
 
         user.changePassword(passwordEncoder.encode(request.getNewPassword()));
         tokenRedisRepository.deleteResetToken(request.getResetToken());

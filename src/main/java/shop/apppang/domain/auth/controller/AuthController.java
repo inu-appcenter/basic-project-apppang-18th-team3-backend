@@ -158,13 +158,13 @@ public class AuthController {
                             examples = @ExampleObject(value = "{\"message\": \"비밀번호가 재설정되었습니다\"}"))),
             @ApiResponse(responseCode = "400", description = "비밀번호 형식 오류",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(value = "{\"error\": \"비밀번호는 8자 이상, 영문+숫자 조합이어야 합니다\"}"))),
+                            examples = @ExampleObject(value = "{\"error\": \"비밀번호는 8~20자, 영문+숫자 조합이어야 합니다. 특수문자는 사용할 수 없습니다.\"}"))),
             @ApiResponse(responseCode = "401", description = "유효하지 않거나 만료된 재설정 토큰 (토큰 검증이 우선 적용됨)",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"유효하지 않거나 만료된 요청입니다\"}")))
     })
     @PostMapping("/reset-password")
-    public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
 
         ResetPasswordResponse response = authService.resetPassword(request);
 
