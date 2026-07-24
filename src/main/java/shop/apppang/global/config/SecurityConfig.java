@@ -43,10 +43,19 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()   // Swagger 테스트용
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/products",
+                                "/api/products/{productId}",
+                                "/api/products/{productId}/reviews",
+                                "/api/categories",
+                                "/api/banners",
+                                "/api/search/suggestions"
+                        ).permitAll()   // 비로그인도 조회 가능한 공개 API
                         .requestMatchers(HttpMethod.GET, "/api/chat/history").authenticated()   // 히스토리는 로그인 필수
                         .requestMatchers(HttpMethod.POST, "/api/chat").permitAll()              // 채팅은 비로그인 허용
                         .requestMatchers(HttpMethod.POST, "/api/auth/logout").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/banners").permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(basic -> basic.disable())

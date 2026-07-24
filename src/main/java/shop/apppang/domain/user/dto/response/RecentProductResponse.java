@@ -1,4 +1,4 @@
-package shop.apppang.domain.user.dto;
+package shop.apppang.domain.user.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
