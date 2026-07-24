@@ -21,7 +21,7 @@ import shop.apppang.domain.user.dto.response.ChangePasswordResponse;
 import shop.apppang.domain.user.dto.response.UserMeResponse;
 import shop.apppang.domain.user.dto.response.UserResponse;
 import shop.apppang.domain.user.service.UserService;
-import shop.apppang.domain.user.dto.RecentProductResponse;
+import shop.apppang.domain.user.dto.response.RecentProductResponse;
 import shop.apppang.global.exception.ErrorResponse;
 
 @Tag(name = "회원")
@@ -86,7 +86,7 @@ public class UserController {
                     examples = @ExampleObject(value = """
                             { "items": [ { "productId": 5, "name": "여름 티셔츠", "imageUrl": "https://.../5.jpg", "price": 12000 } ] }
                             """)))
-    @GetMapping("/recent-products")
+    @GetMapping("/me/recent-products")
     public RecentProductResponse getRecentProducts(@AuthenticationPrincipal Long userId) {
 
         return userService.getRecentProducts(userId);

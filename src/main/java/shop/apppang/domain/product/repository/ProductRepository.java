@@ -12,7 +12,10 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
 
     // 1. 검색어 자동완성용 메서드 (Top 10)
-    List<ProductEntity> findTop10ByNameStartingWithIgnoreCaseAndActiveTrueOrderByIdDesc(String name);
+    List<ProductEntity> findTop10ByNameStartingWithIgnoreCaseAndIsActiveTrueOrderByIdDesc(String name);
+
+    // 1-1. 최근 찾던 상품용 메서드 (최근 검색어로 관련 활성 상품 Top 20)
+    List<ProductEntity> findTop20ByNameContainingIgnoreCaseAndIsActiveTrueOrderByIdAsc(String name);
 
     // 2. 상품 목록 필터링 및 페이징 조회 (Sort는 Pageable 객체로 자동 처리)
     @Query("SELECT p FROM ProductEntity p " +
