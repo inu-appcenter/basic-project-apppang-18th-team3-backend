@@ -10,6 +10,7 @@
     import org.springframework.web.server.ResponseStatusException;
     import shop.apppang.domain.auth.exception.InvalidCredentialsException;
     import shop.apppang.domain.auth.exception.InvalidPasswordFormatException;
+    import shop.apppang.domain.auth.exception.InvalidRefreshTokenException;
     import shop.apppang.domain.auth.exception.InvalidResetTokenException;
     import shop.apppang.domain.auth.exception.MemberNotFoundException;
 
@@ -71,6 +72,14 @@
 
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST) // 400
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+
+        @ExceptionHandler(InvalidRefreshTokenException.class)
+        public ResponseEntity<ErrorResponse> handleInvalidRefreshToken(InvalidRefreshTokenException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED) // 401
                     .body(new ErrorResponse(e.getMessage()));
         }
 

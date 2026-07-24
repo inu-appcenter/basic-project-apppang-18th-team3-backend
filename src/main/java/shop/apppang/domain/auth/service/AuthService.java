@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.apppang.domain.auth.dto.request.FindEmailRequest;
 import shop.apppang.domain.auth.dto.request.LoginRequest;
 import shop.apppang.domain.auth.dto.request.PasswordResetVerifyRequest;
+import shop.apppang.domain.auth.dto.request.ReissueRequest;
 import shop.apppang.domain.auth.dto.request.ResetPasswordRequest;
 import shop.apppang.domain.auth.dto.request.SignupRequest;
 import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
@@ -15,11 +16,13 @@ import shop.apppang.domain.auth.dto.response.FindEmailResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
 import shop.apppang.domain.auth.dto.response.LogoutResponse;
 import shop.apppang.domain.auth.dto.response.PasswordResetVerifyResponse;
+import shop.apppang.domain.auth.dto.response.ReissueResponse;
 import shop.apppang.domain.auth.dto.response.ResetPasswordResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.exception.DuplicateEmailException;
 import shop.apppang.domain.auth.exception.InvalidCredentialsException;
 import shop.apppang.domain.auth.exception.InvalidPasswordFormatException;
+import shop.apppang.domain.auth.exception.InvalidRefreshTokenException;
 import shop.apppang.domain.auth.exception.InvalidResetTokenException;
 import shop.apppang.domain.auth.exception.MemberNotFoundException;
 import shop.apppang.domain.auth.util.EmailMaskingUtil;
@@ -80,14 +83,50 @@ public class AuthService {
             throw new InvalidCredentialsException();
         }
 
-        String token = jwtTokenProvider.generateAccessToken(user.getId(), user.getEmail());
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getEmail());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+        tokenRedisRepository.saveRefreshToken(
+                user.getId(), refreshToken, Duration.ofMillis(jwtProperties.getRefreshTokenExpiration()));
 
         return LoginResponse.builder()
-                .token(token)
+                .token(accessToken)
+                .refreshToken(refreshToken)
                 .user(LoginResponse.UserInfo.builder()
                         .userId(user.getId())
                         .name(user.getName())
                         .build())
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public ReissueResponse reissue(ReissueRequest request) {
+
+        Long userId;
+        try {
+            userId = jwtTokenProvider.validateRefreshTokenAndGetUserId(request.getRefreshToken());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidRefreshTokenException();
+        }
+
+        String storedRefreshToken = tokenRedisRepository.findRefreshToken(userId)
+                .orElseThrow(InvalidRefreshTokenException::new);
+
+        // 저장된 값과 다르면 이미 rotation으로 폐기된(재사용된) 리프레시 토큰이다.
+        if (!storedRefreshToken.equals(request.getRefreshToken())) {
+            throw new InvalidRefreshTokenException();
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(InvalidRefreshTokenException::new);
+
+        String newAccessToken = jwtTokenProvider.generateAccessToken(user.getId(), user.getEmail());
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+        tokenRedisRepository.saveRefreshToken(
+                user.getId(), newRefreshToken, Duration.ofMillis(jwtProperties.getRefreshTokenExpiration()));
+
+        return ReissueResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
                 .build();
     }
 

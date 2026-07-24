@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.auth.dto.request.FindEmailRequest;
 import shop.apppang.domain.auth.dto.request.LoginRequest;
 import shop.apppang.domain.auth.dto.request.PasswordResetVerifyRequest;
+import shop.apppang.domain.auth.dto.request.ReissueRequest;
 import shop.apppang.domain.auth.dto.request.ResetPasswordRequest;
 import shop.apppang.domain.auth.dto.request.SignupRequest;
 import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
@@ -27,6 +28,7 @@ import shop.apppang.domain.auth.dto.response.FindEmailResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
 import shop.apppang.domain.auth.dto.response.LogoutResponse;
 import shop.apppang.domain.auth.dto.response.PasswordResetVerifyResponse;
+import shop.apppang.domain.auth.dto.response.ReissueResponse;
 import shop.apppang.domain.auth.dto.response.ResetPasswordResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.service.AuthService;
@@ -70,7 +72,7 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "로그인 성공",
                     content = @Content(schema = @Schema(implementation = LoginResponse.class),
                             examples = @ExampleObject(value = """
-                                    { "token": "eyJhbGci...", "user": { "userId": 1, "name": "정태영" } }
+                                    { "token": "eyJhbGci...", "refreshToken": "eyJhbGci...", "user": { "userId": 1, "name": "정태영" } }
                                     """))),
             @ApiResponse(responseCode = "400", description = "이메일/비밀번호 누락",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
@@ -165,6 +167,28 @@ public class AuthController {
     public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
 
         ResetPasswordResponse response = authService.resetPassword(request);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "액세스 토큰 재발급")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "재발급 성공 (리프레시 토큰도 함께 교체됨)",
+                    content = @Content(schema = @Schema(implementation = ReissueResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "accessToken": "eyJhbGci...", "refreshToken": "eyJhbGci..." }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "리프레시 토큰 누락",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"리프레시 토큰을 입력해주세요.\"}"))),
+            @ApiResponse(responseCode = "401", description = "유효하지 않거나 만료된 리프레시 토큰, 또는 이미 재발급에 사용되어 폐기된 토큰",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"유효하지 않거나 만료된 리프레시 토큰입니다\"}")))
+    })
+    @PostMapping("/reissue")
+    public ResponseEntity<ReissueResponse> reissue(@Valid @RequestBody ReissueRequest request) {
+
+        ReissueResponse response = authService.reissue(request);
 
         return ResponseEntity.ok(response);
     }
