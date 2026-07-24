@@ -38,7 +38,7 @@ public class SearchService {
         }
 
         List<ProductEntity> products = productRepository
-                .findTop10ByNameStartingWithIgnoreCaseAndActiveTrueOrderByIdDesc(trimmedKeyword);
+                .findTop10ByNameStartingWithIgnoreCaseAndIsActiveTrueOrderByIdDesc(trimmedKeyword);
 
         List<String> suggestions = products.stream()
                 .map(ProductEntity::getName)

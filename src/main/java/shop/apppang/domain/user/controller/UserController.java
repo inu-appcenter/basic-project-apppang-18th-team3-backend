@@ -21,7 +21,7 @@ import shop.apppang.domain.user.dto.response.ChangePasswordResponse;
 import shop.apppang.domain.user.dto.response.UserMeResponse;
 import shop.apppang.domain.user.dto.response.UserResponse;
 import shop.apppang.domain.user.service.UserService;
-import shop.apppang.domain.user.dto.RecentProductResponse;
+import shop.apppang.domain.user.dto.response.RecentProductResponse;
 import shop.apppang.global.exception.ErrorResponse;
 
 @Tag(name = "회원")
@@ -68,7 +68,7 @@ public class UserController {
         return userService.changePassword(userId, request);
     }
     @Operation(summary = "최근 찾던 상품 조회")
-    @GetMapping("/recent-products")
+    @GetMapping("/me/recent-products")
     public RecentProductResponse getRecentProducts(@AuthenticationPrincipal Long userId) {
 
         return userService.getRecentProducts(userId);
