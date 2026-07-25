@@ -43,7 +43,12 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "회원가입")
+    @Operation(summary = "회원가입", description = """
+            [형식]<br>
+            이메일 : 표준 이메일 형식 (라이브러리의 검증 로직)<br>
+            비밀번호 : 8~20자, 영문+숫자 조합(각각 1개 이상 포함), 특수문자 미포함<br>
+            휴대폰번호 : 하이픈 없이 숫자만, 01로 시작, 총 10~11자<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공",
                     content = @Content(schema = @Schema(implementation = SignupResponse.class),
@@ -67,14 +72,17 @@ public class AuthController {
                 .body(response);
     }
 
-    @Operation(summary = "로그인")
+    @Operation(summary = "로그인", description = """
+            [형식]<br>
+            이메일 : 표준 이메일 형식 (라이브러리의 검증 로직)<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공",
                     content = @Content(schema = @Schema(implementation = LoginResponse.class),
                             examples = @ExampleObject(value = """
                                     { "token": "eyJhbGci...", "refreshToken": "eyJhbGci...", "user": { "userId": 1, "name": "정태영" } }
                                     """))),
-            @ApiResponse(responseCode = "400", description = "이메일/비밀번호 누락",
+            @ApiResponse(responseCode = "400", description = "이메일/비밀번호 누락 / 이메일 형식 오류 중 하나",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"이메일과 비밀번호를 입력해주세요\"}"))),
             @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치",
@@ -89,7 +97,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "이메일 중복 확인")
+    @Operation(summary = "이메일 중복 확인", description = """
+            [형식]<br>
+            이메일 : 표준 이메일 형식 (라이브러리의 검증 로직)<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "확인 성공 (available=false면 이미 사용 중)",
                     content = @Content(schema = @Schema(implementation = EmailCheckResponse.class),
@@ -109,7 +120,10 @@ public class AuthController {
         return ResponseEntity.ok(authService.checkEmailAvailable(email));
     }
 
-    @Operation(summary = "아이디(이메일) 찾기")
+    @Operation(summary = "아이디(이메일) 찾기", description = """
+            [형식]<br>
+            휴대폰번호 : 하이픈 없이 숫자만, 01로 시작, 총 10~11자<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "찾기 성공 (마스킹된 이메일 목록)",
                     content = @Content(schema = @Schema(implementation = FindEmailResponse.class),
@@ -131,7 +145,11 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "비밀번호 재설정 본인인증")
+    @Operation(summary = "비밀번호 재설정 본인인증", description = """
+            [형식]<br>
+            이메일 : 표준 이메일 형식 (라이브러리의 검증 로직)<br>
+            휴대폰번호 : 하이픈 없이 숫자만, 01로 시작, 총 10~11자<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "본인인증 성공 (재설정용 임시 토큰, 만료 15분)",
                     content = @Content(schema = @Schema(implementation = PasswordResetVerifyResponse.class),
@@ -151,7 +169,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "비밀번호 재설정")
+    @Operation(summary = "비밀번호 재설정", description = """
+            [형식]<br>
+            비밀번호 : 8~20자, 영문+숫자 조합(각각 1개 이상 포함), 특수문자 미포함<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "비밀번호 재설정 성공",
                     content = @Content(schema = @Schema(implementation = ResetPasswordResponse.class),
