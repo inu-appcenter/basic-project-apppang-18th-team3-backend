@@ -9,13 +9,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.order.dto.*;
 import shop.apppang.domain.order.service.OrderService;
 import shop.apppang.global.exception.ErrorResponse;
-import java.util.List;
 
 @Tag(name = "주문")
 @RestController
@@ -49,25 +51,40 @@ public class OrderController {
         return ResponseEntity.status(201).body(orderService.createOrder(userId, request));
     }
 
-    @Operation(summary = "내 주문 목록")
-    @ApiResponse(responseCode = "200", description = "주문 목록 조회 성공 (없으면 빈 배열)",
-            content = @Content(schema = @Schema(implementation = OrderSummaryResponse.class),
+    @Operation(summary = "내 주문 목록 (페이징)")
+    @ApiResponse(responseCode = "200", description = "주문 목록 조회 성공 (없으면 items: [], total: 0)",
+            content = @Content(schema = @Schema(implementation = OrderListResponse.class),
                     examples = @ExampleObject(value = """
-                            [
-                              {
-                                "orderId": 100,
-                                "orderDate": "2026-06-15T14:00:00",
-                                "status": "진행중",
-                                "totalPrice": 42000,
-                                "items": [
-                                  { "orderItemId": 1, "productId": 5, "productName": "여름 티셔츠", "quantity": 2, "price": 15000, "status": "배송중" }
-                                ]
-                              }
-                            ]
+                            {
+                              "page": 1,
+                              "size": 10,
+                              "total": 23,
+                              "hasNext": true,
+                              "items": [
+                                {
+                                  "orderId": 100,
+                                  "orderDate": "2026-06-15T14:00:00",
+                                  "status": "진행중",
+                                  "totalPrice": 42000,
+                                  "items": [
+                                    { "orderItemId": 1, "productId": 5, "productName": "여름 티셔츠", "quantity": 2, "price": 15000, "status": "배송중" }
+                                  ]
+                                }
+                              ]
+                            }
                             """)))
     @GetMapping
-    public ResponseEntity<List<OrderSummaryResponse>> getOrders(@AuthenticationPrincipal Long userId) {
-        return ResponseEntity.ok(orderService.getOrders(userId));
+    public ResponseEntity<OrderListResponse> getOrders(
+            @AuthenticationPrincipal Long userId,
+            @Parameter(description = "페이지 번호 (1부터 시작)")
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @Parameter(description = "페이지당 개수")
+            @RequestParam(name = "size", defaultValue = "10") int size) {
+        // 프론트의 1-based page를 Spring Data JPA의 0-based page로 변환
+        int pageNumber = Math.max(0, page - 1);
+        // 최신 주문이 위로 오도록 createdAt 내림차순 정렬
+        Pageable pageable = PageRequest.of(pageNumber, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(orderService.getOrders(userId, pageable));
     }
 
     @Operation(summary = "주문 상세 조회")
