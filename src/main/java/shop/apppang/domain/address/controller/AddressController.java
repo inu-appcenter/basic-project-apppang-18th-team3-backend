@@ -41,7 +41,7 @@ public class AddressController {
                                 "detailAddress": "101동 202호",
                                 "normalDeliveryRequest": "문 앞에 놓아주세요",
                                 "rocketDeliveryRequest": "경비실에 맡겨주세요",
-                                "isDefault": true
+                                "isDefaultAddress": true
                               }
                             ]
                             """)))
@@ -65,7 +65,7 @@ public class AddressController {
                                       "detailAddress": "101동 202호",
                                       "normalDeliveryRequest": "문 앞에 놓아주세요",
                                       "rocketDeliveryRequest": "경비실에 맡겨주세요",
-                                      "isDefault": true
+                                      "isDefaultAddress": true
                                     }
                                     """))),
             @ApiResponse(responseCode = "400", description = "필수 정보 누락 / 휴대폰 번호 형식 오류 중 하나",
@@ -93,7 +93,7 @@ public class AddressController {
                               "detailAddress": "303호",
                               "normalDeliveryRequest": "직접 받을게요",
                               "rocketDeliveryRequest": "경비실에 맡겨주세요",
-                              "isDefault": true
+                              "isDefaultAddress": true
                             }
                             """)))
     @PatchMapping("/{addressId}")
