@@ -40,3 +40,5 @@ out/
 app.env
 .env
 *.env
+/docs/
+/CLAUDE.md
