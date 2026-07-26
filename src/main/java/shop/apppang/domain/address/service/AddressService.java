@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor        // final 필드를 자동으로 생성자 주입
@@ -66,9 +68,9 @@ public class AddressService {
     // --- 내부 헬퍼 ---
     private AddressEntity findMyAddress(Long userId, Long addressId) {
         AddressEntity address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new IllegalArgumentException("배송지를 찾을 수 없습니다"));
-        if (!address.getUserId().equals(userId)) {   // 본인 배송지인지 확인
-            throw new IllegalArgumentException("본인의 배송지만 접근할 수 있습니다");
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "배송지를 찾을 수 없습니다"));   // → 404
+        if (!address.getUserId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인의 배송지만 접근할 수 있습니다");            // → 403
         }
         return address;
     }
