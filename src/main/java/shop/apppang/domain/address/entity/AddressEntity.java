@@ -27,7 +27,7 @@ public class AddressEntity {
     private String detailAddress;
     private String normalDeliveryRequest;
     private String rocketDeliveryRequest;
-    @Column(name = "is_default")     // 필드명은 isDefaultAddress지만 DB 컬럼은 기존 is_default 유지
+    @Column(name = "is_default_address")
     private Boolean isDefaultAddress;
     private LocalDateTime createdAt;
 
