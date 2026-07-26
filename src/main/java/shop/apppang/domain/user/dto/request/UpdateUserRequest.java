@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import shop.apppang.global.validation.ValidationPatterns;
 
 @Getter
 @NoArgsConstructor
@@ -17,7 +18,7 @@ public class UpdateUserRequest {
     @Schema(description = "변경할 이름 (바꿀 항목만 전달)", example = "고명재")
     private String name;
 
-    @Schema(description = "변경할 휴대폰 번호 (바꿀 항목만 전달)", example = "01012345678")
-    @Pattern(regexp = "^01[016789]-?\\d{3,4}-?\\d{4}$", message = "올바른 휴대폰 번호를 입력해주세요")
+    @Schema(description = "변경할 휴대폰 번호 (바꿀 항목만 전달, 하이픈 없이 숫자만)", example = "01012345678")
+    @Pattern(regexp = ValidationPatterns.PHONE_NUMBER, message = ValidationPatterns.PHONE_NUMBER_MESSAGE)
     private String phoneNumber;
 }
