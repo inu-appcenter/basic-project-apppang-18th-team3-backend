@@ -2,6 +2,8 @@ package shop.apppang.domain.order.service;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,8 @@ import shop.apppang.domain.product.entity.ProductEntity;
 import shop.apppang.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -102,12 +106,33 @@ public class OrderService {
         return new OrderCreateResponse(order.getId(), totalPrice, order.getStatus(), user.getAppMoney());
     }
 
-    // ② 주문 목록
+    // ② 주문 목록 (페이징)
     @Transactional(readOnly = true)
-    public List<OrderSummaryResponse> getOrders(Long userId) {
-        return orderRepository.findByUser_IdOrderByCreatedAtDesc(userId).stream()
-                .map(o -> OrderSummaryResponse.from(o, orderItemRepository.findByOrder_Id(o.getId())))
+    public OrderListResponse getOrders(Long userId, Pageable pageable) {
+        // 이 유저의 주문을 한 페이지(예: 10개)만 DB에서 가져온다. 전체를 메모리에 올리지 않는다.
+        Page<OrderEntity> orderPage = orderRepository.findByUser_Id(userId, pageable);
+        List<OrderEntity> orders = orderPage.getContent();
+
+        // N+1 방지: 이 페이지 주문들의 ID를 모아 주문상세를 IN 절로 "한 번에" 조회한 뒤
+        // 주문 ID 기준으로 그룹핑해 둔다. (주문마다 개별 쿼리를 날리지 않기 위함)
+        List<Long> orderIds = orders.stream().map(OrderEntity::getId).toList();
+        Map<Long, List<OrderItemEntity>> itemsByOrderId = orderIds.isEmpty()
+                ? Map.of()
+                : orderItemRepository.findByOrder_IdIn(orderIds).stream()
+                        .collect(Collectors.groupingBy(oi -> oi.getOrder().getId()));
+
+        // 미리 그룹핑해 둔 주문상세를 꺼내 쓰므로 여기서는 추가 쿼리가 발생하지 않는다.
+        List<OrderSummaryResponse> items = orders.stream()
+                .map(o -> OrderSummaryResponse.from(o, itemsByOrderId.getOrDefault(o.getId(), List.of())))
                 .toList();
+
+        return new OrderListResponse(
+                pageable.getPageNumber() + 1,          // JPA의 0-based → 프론트 1-based로 환산
+                pageable.getPageSize(),
+                (int) orderPage.getTotalElements(),    // 전체 주문 수
+                orderPage.hasNext(),                   // 다음 페이지 존재 여부
+                items
+        );
     }
 
     // ③ 주문 상세
