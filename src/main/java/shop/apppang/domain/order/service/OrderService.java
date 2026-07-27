@@ -119,9 +119,9 @@ public class OrderService {
 
     // ④ 결제 예상 금액
     @Transactional(readOnly = true)
-    public EstimateResponse estimate(EstimateRequest req) {
+    public EstimateResponse estimate(List<OrderItemRequest> items) {
         long productAmount = 0;
-        for (OrderItemRequest it : req.items()) {
+        for (OrderItemRequest it : items) {
             ProductEntity p = em.find(ProductEntity.class, it.productId());
             if (p == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다: " + it.productId());
