@@ -9,12 +9,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import shop.apppang.domain.order.dto.*;
 import shop.apppang.domain.order.service.OrderService;
 import shop.apppang.global.exception.ErrorResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "주문")
@@ -108,14 +111,31 @@ public class OrderController {
     }
 
     @Operation(summary = "결제 예상 금액 조회 (서버 계산)")
-    @ApiResponse(responseCode = "200", description = "예상 금액 계산 성공",
-            content = @Content(schema = @Schema(implementation = EstimateResponse.class),
-                    examples = @ExampleObject(value = """
-                            { "productAmount": 50000, "discountAmount": 8000, "shippingFee": 0, "totalPrice": 42000 }
-                            """)))
-    @PostMapping("/estimate")
-    public ResponseEntity<EstimateResponse> estimate(@RequestBody EstimateRequest request) {
-        return ResponseEntity.ok(orderService.estimate(request));
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "예상 금액 계산 성공",
+                    content = @Content(schema = @Schema(implementation = EstimateResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "productAmount": 50000, "discountAmount": 8000, "shippingFee": 0, "totalPrice": 42000 }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "productIds와 quantities의 개수가 다름",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"상품 목록과 수량 목록의 개수가 일치하지 않습니다\"}")))
+    })
+    @GetMapping("/estimate")
+    public ResponseEntity<EstimateResponse> estimate(
+            @Parameter(description = "상품 ID 목록 (quantities와 같은 순서·개수)", example = "5,8")
+            @RequestParam List<Long> productIds,
+            @Parameter(description = "수량 목록 (productIds와 같은 순서·개수)", example = "2,1")
+            @RequestParam List<Integer> quantities) {
+        if (productIds.size() != quantities.size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "상품 목록과 수량 목록의 개수가 일치하지 않습니다");
+        }
+        // 병렬 배열을 인덱스로 매칭해 상품 목록으로 조립 (요청 매핑은 Controller 책임)
+        List<OrderItemRequest> items = new ArrayList<>();
+        for (int i = 0; i < productIds.size(); i++) {
+            items.add(new OrderItemRequest(productIds.get(i), quantities.get(i)));
+        }
+        return ResponseEntity.ok(orderService.estimate(items));
     }
 
     @Operation(summary = "주문 취소")
