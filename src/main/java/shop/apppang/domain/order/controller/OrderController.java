@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.order.dto.*;
 import shop.apppang.domain.order.service.OrderService;
 import shop.apppang.global.exception.ErrorResponse;
+
+import java.util.List;
 
 @Tag(name = "주문")
 @RestController
@@ -124,15 +127,20 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderDetail(userId, orderId));
     }
 
-    @Operation(summary = "결제 예상 금액 조회 (서버 계산)")
+    @Operation(summary = "결제 예상 금액 조회 (서버 계산)",
+            description = "인덱스 파라미터로 상품 목록을 전달한다. 예) /api/orders/estimate?items[0].productId=5&items[0].quantity=2&items[1].productId=8&items[1].quantity=1")
     @ApiResponse(responseCode = "200", description = "예상 금액 계산 성공",
             content = @Content(schema = @Schema(implementation = EstimateResponse.class),
                     examples = @ExampleObject(value = """
                             { "productAmount": 50000, "discountAmount": 8000, "shippingFee": 0, "totalPrice": 42000 }
                             """)))
-    @PostMapping("/estimate")
-    public ResponseEntity<EstimateResponse> estimate(@RequestBody EstimateRequest request) {
-        return ResponseEntity.ok(orderService.estimate(request));
+    @GetMapping("/estimate")
+    public ResponseEntity<EstimateResponse> estimate(@ParameterObject @ModelAttribute EstimateRequest request) {
+        // 쿼리 바인딩용 form(Item)을 도메인 입력(OrderItemRequest)으로 매핑 (요청 매핑은 Controller 책임)
+        List<OrderItemRequest> items = request.getItems().stream()
+                .map(it -> new OrderItemRequest(it.getProductId(), it.getQuantity()))
+                .toList();
+        return ResponseEntity.ok(orderService.estimate(items));
     }
 
     @Operation(summary = "주문 취소")
