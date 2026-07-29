@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<CartItemEntity, Long> {
     List<CartItemEntity> findByUser_Id(Long userId);
     Optional<CartItemEntity> findByUser_IdAndProduct_Id(Long userId, Long productId);  // 담기 합산용
+    void deleteByUser_IdAndProduct_IdIn(Long userId, List<Long> productIds);           // 주문 완료 시 장바구니 정리용
 }
