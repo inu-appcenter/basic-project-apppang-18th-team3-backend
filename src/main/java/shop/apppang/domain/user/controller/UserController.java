@@ -43,7 +43,11 @@ public class UserController {
         return userService.getMyInfo(userId);
     }
 
-    @Operation(summary = "내 정보 수정")
+    @Operation(summary = "내 정보 수정", description = """
+            [형식]<br>
+            이메일 : 표준 이메일 형식 (라이브러리의 검증 로직)<br>
+            휴대폰번호 : 하이픈 없이 숫자만, 01로 시작, 총 10~11자<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "내 정보 수정 성공",
                     content = @Content(schema = @Schema(implementation = UserResponse.class),
@@ -63,7 +67,10 @@ public class UserController {
         return userService.updateMyInfo(userId, request);
     }
 
-    @Operation(summary = "비밀번호 변경 (마이페이지)")
+    @Operation(summary = "비밀번호 변경 (마이페이지)", description = """
+            [형식]<br>
+            비밀번호 : 8~20자, 영문+숫자 조합(각각 1개 이상 포함), 특수문자 미포함<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "비밀번호 변경 성공",
                     content = @Content(schema = @Schema(implementation = ChangePasswordResponse.class),

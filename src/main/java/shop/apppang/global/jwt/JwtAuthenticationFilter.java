@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import shop.apppang.global.redis.TokenRedisRepository;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,6 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenRedisRepository tokenRedisRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -31,11 +33,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authorizationHeader.substring(BEARER_PREFIX.length());
 
             try {
-                Long userId = jwtTokenProvider.validateAccessTokenAndGetUserId(token);
+                JwtTokenProvider.AccessTokenClaims claims = jwtTokenProvider.validateAccessTokenAndGetClaims(token);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userId, null, List.of());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (!tokenRedisRepository.isBlacklisted(claims.jti())) {
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(claims.userId(), null, List.of());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    SecurityContextHolder.clearContext();
+                }
             } catch (IllegalArgumentException e) {
                 SecurityContextHolder.clearContext();
             }

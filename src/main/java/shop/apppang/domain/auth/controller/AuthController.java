@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import shop.apppang.domain.auth.dto.request.FindEmailRequest;
 import shop.apppang.domain.auth.dto.request.LoginRequest;
 import shop.apppang.domain.auth.dto.request.PasswordResetVerifyRequest;
+import shop.apppang.domain.auth.dto.request.ReissueRequest;
 import shop.apppang.domain.auth.dto.request.ResetPasswordRequest;
 import shop.apppang.domain.auth.dto.request.SignupRequest;
 import shop.apppang.domain.auth.dto.response.EmailCheckResponse;
@@ -27,6 +28,7 @@ import shop.apppang.domain.auth.dto.response.FindEmailResponse;
 import shop.apppang.domain.auth.dto.response.LoginResponse;
 import shop.apppang.domain.auth.dto.response.LogoutResponse;
 import shop.apppang.domain.auth.dto.response.PasswordResetVerifyResponse;
+import shop.apppang.domain.auth.dto.response.ReissueResponse;
 import shop.apppang.domain.auth.dto.response.ResetPasswordResponse;
 import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.service.AuthService;
@@ -41,7 +43,12 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @Operation(summary = "회원가입")
+    @Operation(summary = "회원가입", description = """
+            [형식]<br>
+            이메일 : 표준 이메일 형식 (라이브러리의 검증 로직)<br>
+            비밀번호 : 8~20자, 영문+숫자 조합(각각 1개 이상 포함), 특수문자 미포함<br>
+            휴대폰번호 : 하이픈 없이 숫자만, 01로 시작, 총 10~11자<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원가입 성공",
                     content = @Content(schema = @Schema(implementation = SignupResponse.class),
@@ -65,14 +72,17 @@ public class AuthController {
                 .body(response);
     }
 
-    @Operation(summary = "로그인")
+    @Operation(summary = "로그인", description = """
+            [형식]<br>
+            이메일 : 표준 이메일 형식 (라이브러리의 검증 로직)<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "로그인 성공",
                     content = @Content(schema = @Schema(implementation = LoginResponse.class),
                             examples = @ExampleObject(value = """
-                                    { "token": "eyJhbGci...", "user": { "userId": 1, "name": "정태영" } }
+                                    { "token": "eyJhbGci...", "refreshToken": "eyJhbGci...", "user": { "userId": 1, "name": "정태영" } }
                                     """))),
-            @ApiResponse(responseCode = "400", description = "이메일/비밀번호 누락",
+            @ApiResponse(responseCode = "400", description = "이메일/비밀번호 누락 / 이메일 형식 오류 중 하나",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"이메일과 비밀번호를 입력해주세요\"}"))),
             @ApiResponse(responseCode = "401", description = "이메일 또는 비밀번호 불일치",
@@ -87,7 +97,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "이메일 중복 확인")
+    @Operation(summary = "이메일 중복 확인", description = """
+            [형식]<br>
+            이메일 : 표준 이메일 형식 (라이브러리의 검증 로직)<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "확인 성공 (available=false면 이미 사용 중)",
                     content = @Content(schema = @Schema(implementation = EmailCheckResponse.class),
@@ -107,7 +120,10 @@ public class AuthController {
         return ResponseEntity.ok(authService.checkEmailAvailable(email));
     }
 
-    @Operation(summary = "아이디(이메일) 찾기")
+    @Operation(summary = "아이디(이메일) 찾기", description = """
+            [형식]<br>
+            휴대폰번호 : 하이픈 없이 숫자만, 01로 시작, 총 10~11자<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "찾기 성공 (마스킹된 이메일 목록)",
                     content = @Content(schema = @Schema(implementation = FindEmailResponse.class),
@@ -129,7 +145,11 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "비밀번호 재설정 본인인증")
+    @Operation(summary = "비밀번호 재설정 본인인증", description = """
+            [형식]<br>
+            이메일 : 표준 이메일 형식 (라이브러리의 검증 로직)<br>
+            휴대폰번호 : 하이픈 없이 숫자만, 01로 시작, 총 10~11자<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "본인인증 성공 (재설정용 임시 토큰, 만료 15분)",
                     content = @Content(schema = @Schema(implementation = PasswordResetVerifyResponse.class),
@@ -149,34 +169,60 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "비밀번호 재설정")
+    @Operation(summary = "비밀번호 재설정", description = """
+            [형식]<br>
+            비밀번호 : 8~20자, 영문+숫자 조합(각각 1개 이상 포함), 특수문자 미포함<br>
+            """)
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "비밀번호 재설정 성공",
                     content = @Content(schema = @Schema(implementation = ResetPasswordResponse.class),
                             examples = @ExampleObject(value = "{\"message\": \"비밀번호가 재설정되었습니다\"}"))),
             @ApiResponse(responseCode = "400", description = "비밀번호 형식 오류",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
-                            examples = @ExampleObject(value = "{\"error\": \"비밀번호는 8자 이상, 영문+숫자 조합이어야 합니다\"}"))),
+                            examples = @ExampleObject(value = "{\"error\": \"비밀번호는 8~20자, 영문+숫자 조합이어야 합니다. 특수문자는 사용할 수 없습니다.\"}"))),
             @ApiResponse(responseCode = "401", description = "유효하지 않거나 만료된 재설정 토큰 (토큰 검증이 우선 적용됨)",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
                             examples = @ExampleObject(value = "{\"error\": \"유효하지 않거나 만료된 요청입니다\"}")))
     })
     @PostMapping("/reset-password")
-    public ResponseEntity<ResetPasswordResponse> resetPassword(@RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<ResetPasswordResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
 
         ResetPasswordResponse response = authService.resetPassword(request);
 
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "액세스 토큰 재발급")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "재발급 성공 (리프레시 토큰도 함께 교체됨)",
+                    content = @Content(schema = @Schema(implementation = ReissueResponse.class),
+                            examples = @ExampleObject(value = """
+                                    { "accessToken": "eyJhbGci...", "refreshToken": "eyJhbGci..." }
+                                    """))),
+            @ApiResponse(responseCode = "400", description = "리프레시 토큰 누락",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"리프레시 토큰을 입력해주세요.\"}"))),
+            @ApiResponse(responseCode = "401", description = "유효하지 않거나 만료된 리프레시 토큰, 또는 이미 재발급에 사용되어 폐기된 토큰",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"유효하지 않거나 만료된 리프레시 토큰입니다\"}")))
+    })
+    @PostMapping("/reissue")
+    public ResponseEntity<ReissueResponse> reissue(@Valid @RequestBody ReissueRequest request) {
+
+        ReissueResponse response = authService.reissue(request);
+
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "로그아웃")
-    @ApiResponse(responseCode = "200", description = "로그아웃 성공",
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공 (액세스 토큰은 남은 만료시간만큼 블랙리스트 처리되고, 리프레시 토큰은 즉시 폐기됨)",
             content = @Content(schema = @Schema(implementation = LogoutResponse.class),
                     examples = @ExampleObject(value = "{\"message\": \"로그아웃되었습니다\"}")))
     @PostMapping("/logout")
-    public ResponseEntity<LogoutResponse> logout() {
+    public ResponseEntity<LogoutResponse> logout(
+            @Parameter(hidden = true) @RequestHeader("Authorization") String authorizationHeader) {
 
-        LogoutResponse response = authService.logout();
+        LogoutResponse response = authService.logout(authorizationHeader);
 
         return ResponseEntity.ok(response);
     }

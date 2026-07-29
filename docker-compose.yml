@@ -6,8 +6,18 @@ services:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     env_file:
       - app.env
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
 
   caddy:
     image: caddy:latest
@@ -25,3 +35,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+  redis_data:

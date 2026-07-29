@@ -41,7 +41,7 @@ public class AddressController {
                                 "detailAddress": "101동 202호",
                                 "normalDeliveryRequest": "문 앞에 놓아주세요",
                                 "rocketDeliveryRequest": "경비실에 맡겨주세요",
-                                "isDefault": true
+                                "isDefaultAddress": true
                               }
                             ]
                             """)))
@@ -65,7 +65,7 @@ public class AddressController {
                                       "detailAddress": "101동 202호",
                                       "normalDeliveryRequest": "문 앞에 놓아주세요",
                                       "rocketDeliveryRequest": "경비실에 맡겨주세요",
-                                      "isDefault": true
+                                      "isDefaultAddress": true
                                     }
                                     """))),
             @ApiResponse(responseCode = "400", description = "필수 정보 누락 / 휴대폰 번호 형식 오류 중 하나",
@@ -81,21 +81,29 @@ public class AddressController {
 
     // 배송지 수정  →  PATCH /api/addresses/3?userId=1
     @Operation(summary = "배송지 수정")
-    @ApiResponse(responseCode = "200", description = "배송지 수정 성공",
-            content = @Content(schema = @Schema(implementation = AddressResponse.class),
-                    examples = @ExampleObject(value = """
-                            {
-                              "addressId": 3,
-                              "recipientName": "고명재",
-                              "phone": "01012345678",
-                              "zipcode": "06241",
-                              "address": "서울시 강남구 ...",
-                              "detailAddress": "303호",
-                              "normalDeliveryRequest": "직접 받을게요",
-                              "rocketDeliveryRequest": "경비실에 맡겨주세요",
-                              "isDefault": true
-                            }
-                            """)))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "배송지 수정 성공",
+                    content = @Content(schema = @Schema(implementation = AddressResponse.class),
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "addressId": 3,
+                                      "recipientName": "고명재",
+                                      "phone": "01012345678",
+                                      "zipcode": "06241",
+                                      "address": "서울시 강남구 ...",
+                                      "detailAddress": "303호",
+                                      "normalDeliveryRequest": "직접 받을게요",
+                                      "rocketDeliveryRequest": "경비실에 맡겨주세요",
+                                      "isDefaultAddress": true
+                                    }
+                                    """))),
+            @ApiResponse(responseCode = "404", description = "배송지를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"배송지를 찾을 수 없습니다\"}"))),
+            @ApiResponse(responseCode = "403", description = "본인의 배송지가 아님",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"본인의 배송지만 접근할 수 있습니다\"}")))
+    })
     @PatchMapping("/{addressId}")
     public ResponseEntity<AddressResponse> updateAddress(
             @AuthenticationPrincipal Long userId,
@@ -106,12 +114,20 @@ public class AddressController {
 
     // 배송지 삭제  →  DELETE /api/addresses/3?userId=1
     @Operation(summary = "배송지 삭제")
-    @ApiResponse(responseCode = "204", description = "배송지 삭제 성공 (본문 없음)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "배송지 삭제 성공 (본문 없음)"),
+            @ApiResponse(responseCode = "404", description = "배송지를 찾을 수 없음",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"배송지를 찾을 수 없습니다\"}"))),
+            @ApiResponse(responseCode = "403", description = "본인의 배송지가 아님",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\"error\": \"본인의 배송지만 접근할 수 있습니다\"}")))
+    })
     @DeleteMapping("/{addressId}")
     public ResponseEntity<Void> deleteAddress(
             @AuthenticationPrincipal Long userId,
             @Parameter(description = "배송지 ID", required = true) @PathVariable Long addressId) {
         addressService.deleteAddress(userId, addressId);
-        return ResponseEntity.noContent().build();   // 204
+        return ResponseEntity.noContent().build();
     }
 }

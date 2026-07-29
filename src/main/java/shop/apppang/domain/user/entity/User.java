@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 public class User {
+    private static final long DEFAULT_APP_MONEY = 100_000_000L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,7 +46,7 @@ public class User {
         this.password = password;
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.appMoney = (appMoney != null) ? appMoney : 0L;
+        this.appMoney = (appMoney != null) ? appMoney : DEFAULT_APP_MONEY;
     }
 
     public void useMoney(long amount) { this.appMoney -= amount; }
