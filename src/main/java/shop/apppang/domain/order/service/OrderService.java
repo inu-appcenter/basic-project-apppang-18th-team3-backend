@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import shop.apppang.domain.address.entity.AddressEntity;
+import shop.apppang.domain.cart.service.CartService;
 import shop.apppang.domain.order.dto.*;
 import shop.apppang.domain.order.entity.OrderEntity;
 import shop.apppang.domain.order.entity.OrderItemEntity;
@@ -27,6 +28,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final CartService cartService;
     private final EntityManager em;
 
     // 주문에 담을 상품+수량 임시 보관용
@@ -102,6 +104,12 @@ public class OrderService {
                     .build();
             orderItemRepository.save(oi);
         }
+
+        // 주문한 상품과 일치하는 장바구니 항목 정리 (같은 트랜잭션 → 주문 롤백 시 함께 롤백)
+        List<Long> orderedProductIds = lines.stream()
+                .map(line -> line.product().getId())
+                .toList();
+        cartService.removeOrderedItems(userId, orderedProductIds);
 
         return new OrderCreateResponse(order.getId(), totalPrice, order.getStatus(), user.getAppMoney());
     }

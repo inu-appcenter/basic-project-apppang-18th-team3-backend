@@ -4,11 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import shop.apppang.domain.chat.client.GeminiClient;
+import shop.apppang.domain.chat.dto.ChatHistoryPageResponse;
 import shop.apppang.domain.chat.dto.ChatHistoryResponse;
 import shop.apppang.domain.chat.dto.ChatRequest;
 import shop.apppang.domain.chat.dto.ChatResponse;
@@ -85,13 +88,31 @@ public class ChatService {
     }
 
     @Transactional(readOnly = true)
-    public List<ChatHistoryResponse> getHistory(Long userId) {
+    public ChatHistoryPageResponse getHistory(Long userId, Long cursor, int size) {
         if (userId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
         }
-        return chatMessageRepository.findByUser_IdOrderByCreatedAtAsc(userId).stream()
-                .map(m -> new ChatHistoryResponse(m.getSessionId(), m.getRole(), m.getMessage(), m.getCreatedAt()))
-                .toList();
+
+        // DB에서는 최신순(id DESC)으로 size개 조회 (첫 로드 / 커서 이후)
+        PageRequest pageable = PageRequest.of(0, size);
+        Slice<ChatMessageEntity> slice = (cursor == null)
+                ? chatMessageRepository.findByUser_IdOrderByIdDesc(userId, pageable)
+                : chatMessageRepository.findByUser_IdAndIdLessThanOrderByIdDesc(userId, cursor, pageable);
+
+        // 화면 표시용으로 시간순(ASC)으로 뒤집어서 응답
+        List<ChatMessageEntity> desc = slice.getContent();
+        List<ChatHistoryResponse> messages = new ArrayList<>();
+        for (int i = desc.size() - 1; i >= 0; i--) {
+            ChatMessageEntity m = desc.get(i);
+            messages.add(new ChatHistoryResponse(m.getSessionId(), m.getRole(), m.getMessage(), m.getCreatedAt()));
+        }
+
+        // nextCursor = 이번 배치에서 가장 오래된 id (DESC 마지막). 더 없으면 null
+        Long nextCursor = (slice.hasNext() && !desc.isEmpty())
+                ? desc.get(desc.size() - 1).getId()
+                : null;
+
+        return new ChatHistoryPageResponse(messages, nextCursor, slice.hasNext());
     }
 
     private Map<String, Object> turn(String role, String text) {
