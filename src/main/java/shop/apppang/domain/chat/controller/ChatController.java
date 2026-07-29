@@ -29,10 +29,22 @@ public class ChatController {
     // 채팅 — 비로그인도 가능, 로그인 시 기록 저장
     @Operation(summary = "챗봇 메시지 전송 (자연어 → 상품 추천)")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "응답 성공 (조건에 맞는 상품이 없으면 products: [])",
+            @ApiResponse(responseCode = "200", description = "응답 성공 (추천 상품이 없으면 recommendedProducts: [])",
                     content = @Content(schema = @Schema(implementation = ChatResponse.class),
                             examples = @ExampleObject(value = """
-                                    { "sessionId": "abc123", "reply": "2만원 이하 로켓배송 커피를 찾아봤어요. 이런 상품은 어떠세요?" }
+                                    {
+                                      "reply": "2만원 이하 로켓배송 커피를 찾아봤어요. 이런 상품은 어떠세요?",
+                                      "sessionId": "abc123",
+                                      "recommendedProducts": [
+                                        {
+                                          "productId": 1,
+                                          "name": "제주 감귤 3kg",
+                                          "brand": "정직한식탁",
+                                          "price": 15900,
+                                          "imageUrl": "https://apppang-images.s3.ap-northeast-2.amazonaws.com/products/1.jpg"
+                                        }
+                                      ]
+                                    }
                                     """))),
             @ApiResponse(responseCode = "400", description = "빈 메시지",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class),
