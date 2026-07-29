@@ -12,6 +12,7 @@ import shop.apppang.domain.cart.entity.CartItemEntity;
 import shop.apppang.domain.cart.repository.CartRepository;
 import shop.apppang.domain.product.entity.ProductEntity;
 import shop.apppang.domain.user.entity.User;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -61,6 +62,14 @@ public class CartService {
     public void deleteCartItem(Long userId, Long cartItemId) {
         CartItemEntity item = findMyCartItem(userId, cartItemId);
         cartRepository.delete(item);
+    }
+
+    // 주문 완료 시 호출: 주문한 상품과 일치하는 장바구니 항목만 삭제
+    // 장바구니를 거치지 않은 주문이면 삭제 대상이 없어 아무 일도 일어나지 않는다
+    @Transactional
+    public void removeOrderedItems(Long userId, List<Long> productIds) {
+        if (productIds == null || productIds.isEmpty()) return;
+        cartRepository.deleteByUser_IdAndProduct_IdIn(userId, productIds);
     }
 
     private CartItemEntity findMyCartItem(Long userId, Long cartItemId) {
