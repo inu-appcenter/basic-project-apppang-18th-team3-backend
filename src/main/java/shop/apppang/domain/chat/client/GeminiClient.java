@@ -28,7 +28,9 @@ public class GeminiClient {
     public String generate(String systemPrompt, List<Map<String, Object>> contents) {
         Map<String, Object> body = Map.of(
                 "systemInstruction", Map.of("parts", List.of(Map.of("text", systemPrompt))),
-                "contents", contents
+                "contents", contents,
+                // 모델이 자유 텍스트 대신 순수 JSON만 반환하도록 강제
+                "generationConfig", Map.of("responseMimeType", "application/json")
         );
 
         GeminiResponse response = restClient.post()

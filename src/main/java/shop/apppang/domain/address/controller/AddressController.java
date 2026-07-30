@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-@Tag(name = "배송지")
+@Tag(name = "배송지", description = "회원은 자주 쓰는 배송지를 등록해두고 주문 시 빠르게 선택")
 @RestController                         // 이 클래스가 REST API임을 표시
 @RequestMapping("/api/addresses")       // 공통 경로
 @RequiredArgsConstructor

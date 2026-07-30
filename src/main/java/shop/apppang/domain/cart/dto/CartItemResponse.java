@@ -7,15 +7,16 @@ public record CartItemResponse(
         Long cartItemId,
         Long productId,
         String productName,
+        String imageUrl,
         Long price,
         Integer quantity,
         Long subtotal      // 상품별 합계 = 가격 × 수량 (계산값)
 ) {
-    public static CartItemResponse from(CartItemEntity c) {
+    public static CartItemResponse from(CartItemEntity c, String imageUrl) {
         ProductEntity p = c.getProduct();
         long subtotal = p.getPrice() * c.getQuantity();
         return new CartItemResponse(
-                c.getId(), p.getId(), p.getName(), p.getPrice(), c.getQuantity(), subtotal
+                c.getId(), p.getId(), p.getName(), imageUrl, p.getPrice(), c.getQuantity(), subtotal
         );
     }
 }

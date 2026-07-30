@@ -18,7 +18,7 @@ import shop.apppang.domain.wishlist.service.WishlistService;
 import shop.apppang.global.exception.ErrorResponse;
 import java.util.List;
 
-@Tag(name = "찜")
+@Tag(name = "찜", description = "회원은 찜을 통해 관심 상품을 보관해두고 나중에 다시 확인")
 @RestController
 @RequestMapping("/api/wishlist")
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class WishlistController {
             content = @Content(schema = @Schema(implementation = WishlistResponse.class),
                     examples = @ExampleObject(value = """
                             [
-                              { "wishlistId": 3, "productId": 5, "productName": "여름 티셔츠", "brand": "나이키", "price": 15000, "rocketDelivery": true }
+                              { "wishlistId": 3, "productId": 5, "productName": "여름 티셔츠", "imageUrl": "https://apppang-bucket.s3.ap-northeast-2.amazonaws.com/products/5/main.jpg", "brand": "나이키", "price": 15000, "rocketDelivery": true }
                             ]
                             """)))
     @GetMapping

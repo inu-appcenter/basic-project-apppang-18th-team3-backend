@@ -22,7 +22,7 @@ import shop.apppang.global.exception.ErrorResponse;
 
 import java.util.List;
 
-@Tag(name = "주문")
+@Tag(name = "주문", description = "회원은 장바구니 상품을 주문으로 확정하고, 결제 금액을 미리 확인하거나 주문을 취소")
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -70,7 +70,7 @@ public class OrderController {
                                   "status": "진행중",
                                   "totalPrice": 42000,
                                   "items": [
-                                    { "orderItemId": 1, "productId": 5, "productName": "여름 티셔츠", "quantity": 2, "price": 15000, "status": "배송중" }
+                                    { "orderItemId": 1, "productId": 5, "productName": "여름 티셔츠", "imageUrl": "https://apppang-bucket.s3.ap-northeast-2.amazonaws.com/products/5/main.jpg", "quantity": 2, "price": 15000, "status": "배송중" }
                                   ]
                                 }
                               ]
@@ -111,8 +111,8 @@ public class OrderController {
                                       "detailAddress": "101동 202호",
                                       "deliveryRequest": "문 앞에 놓아주세요",
                                       "items": [
-                                        { "orderItemId": 1, "productId": 5, "productName": "여름 티셔츠", "quantity": 2, "price": 15000, "status": "배송중" },
-                                        { "orderItemId": 2, "productId": 8, "productName": "운동화", "quantity": 1, "price": 30000, "status": "배송완료" }
+                                        { "orderItemId": 1, "productId": 5, "productName": "여름 티셔츠", "imageUrl": "https://apppang-bucket.s3.ap-northeast-2.amazonaws.com/products/5/main.jpg", "quantity": 2, "price": 15000, "status": "배송중" },
+                                        { "orderItemId": 2, "productId": 8, "productName": "운동화", "imageUrl": "https://apppang-bucket.s3.ap-northeast-2.amazonaws.com/products/8/main.jpg", "quantity": 1, "price": 30000, "status": "배송완료" }
                                       ]
                                     }
                                     """))),

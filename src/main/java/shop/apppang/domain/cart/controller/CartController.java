@@ -19,7 +19,7 @@ import shop.apppang.domain.cart.dto.CartUpdateRequest;
 import shop.apppang.domain.cart.service.CartService;
 import shop.apppang.global.exception.ErrorResponse;
 
-@Tag(name = "장바구니")
+@Tag(name = "장바구니", description = "회원은 구매 예정인 상품을 장바구니에 담아두고 수량을 조정")
 @RestController
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
@@ -35,7 +35,7 @@ public class CartController {
                               "itemCount": 1,
                               "totalPrice": 24000,
                               "items": [
-                                { "cartItemId": 10, "productId": 5, "productName": "여름 티셔츠", "price": 12000, "quantity": 2, "subtotal": 24000 }
+                                { "cartItemId": 10, "productId": 5, "productName": "여름 티셔츠", "imageUrl": "https://apppang-bucket.s3.ap-northeast-2.amazonaws.com/products/5/main.jpg", "price": 12000, "quantity": 2, "subtotal": 24000 }
                               ]
                             }
                             """)))

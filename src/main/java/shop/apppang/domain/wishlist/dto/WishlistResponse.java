@@ -7,14 +7,15 @@ public record WishlistResponse(
         Long wishlistId,
         Long productId,
         String productName,
+        String imageUrl,
         String brand,
         Long price,
         Boolean rocketDelivery
 ) {
-    public static WishlistResponse from(WishlistEntity w) {
+    public static WishlistResponse from(WishlistEntity w, String imageUrl) {
         ProductEntity p = w.getProduct();
         return new WishlistResponse(
-                w.getId(), p.getId(), p.getName(), p.getBrand(), p.getPrice(), p.getRocketDelivery()
+                w.getId(), p.getId(), p.getName(), imageUrl, p.getBrand(), p.getPrice(), p.getRocketDelivery()
         );
     }
 }
