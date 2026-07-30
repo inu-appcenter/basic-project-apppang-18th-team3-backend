@@ -16,6 +16,8 @@ import shop.apppang.domain.order.entity.OrderItemEntity;
 import shop.apppang.domain.order.repository.OrderItemRepository;
 import shop.apppang.domain.order.repository.OrderRepository;
 import shop.apppang.domain.product.entity.ProductEntity;
+import shop.apppang.domain.product.entity.ProductImageEntity;
+import shop.apppang.domain.product.repository.ProductImageRepository;
 import shop.apppang.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final ProductImageRepository productImageRepository;
     private final CartService cartService;
     private final EntityManager em;
 
@@ -124,14 +127,18 @@ public class OrderService {
         // N+1 방지: 이 페이지 주문들의 ID를 모아 주문상세를 IN 절로 "한 번에" 조회한 뒤
         // 주문 ID 기준으로 그룹핑해 둔다. (주문마다 개별 쿼리를 날리지 않기 위함)
         List<Long> orderIds = orders.stream().map(OrderEntity::getId).toList();
-        Map<Long, List<OrderItemEntity>> itemsByOrderId = orderIds.isEmpty()
-                ? Map.of()
-                : orderItemRepository.findByOrder_IdIn(orderIds).stream()
-                        .collect(Collectors.groupingBy(oi -> oi.getOrder().getId()));
+        List<OrderItemEntity> allItems = orderIds.isEmpty()
+                ? List.of()
+                : orderItemRepository.findByOrder_IdIn(orderIds);
+        Map<Long, List<OrderItemEntity>> itemsByOrderId = allItems.stream()
+                .collect(Collectors.groupingBy(oi -> oi.getOrder().getId()));
+
+        // 대표 이미지도 상품 ID를 모아 한 번에 조회 (주문상세마다 개별 쿼리를 날리지 않기 위함)
+        Map<Long, String> mainImageMap = getMainImageMap(allItems);
 
         // 미리 그룹핑해 둔 주문상세를 꺼내 쓰므로 여기서는 추가 쿼리가 발생하지 않는다.
         List<OrderSummaryResponse> items = orders.stream()
-                .map(o -> OrderSummaryResponse.from(o, itemsByOrderId.getOrDefault(o.getId(), List.of())))
+                .map(o -> OrderSummaryResponse.from(o, itemsByOrderId.getOrDefault(o.getId(), List.of()), mainImageMap))
                 .toList();
 
         return new OrderListResponse(
@@ -147,7 +154,25 @@ public class OrderService {
     @Transactional(readOnly = true)
     public OrderDetailResponse getOrderDetail(Long userId, Long orderId) {
         OrderEntity order = findMyOrder(userId, orderId);
-        return OrderDetailResponse.from(order, orderItemRepository.findByOrder_Id(orderId));
+        List<OrderItemEntity> items = orderItemRepository.findByOrder_Id(orderId);
+        return OrderDetailResponse.from(order, items, getMainImageMap(items));
+    }
+
+    // 주문상세 목록의 상품 ID를 모아 대표 이미지를 한 번에 조회 (없으면 null)
+    private Map<Long, String> getMainImageMap(List<OrderItemEntity> orderItems) {
+        List<Long> productIds = orderItems.stream()
+                .map(oi -> oi.getProduct().getId())
+                .distinct()
+                .toList();
+        if (productIds.isEmpty()) {
+            return Map.of();
+        }
+        return productImageRepository.findByProductIdInAndIsMainTrue(productIds).stream()
+                .collect(Collectors.toMap(
+                        img -> img.getProduct().getId(),
+                        ProductImageEntity::getImageUrl,
+                        (existing, replacement) -> existing
+                ));
     }
 
     // ④ 결제 예상 금액

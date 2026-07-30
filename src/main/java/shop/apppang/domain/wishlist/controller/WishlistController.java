@@ -31,7 +31,7 @@ public class WishlistController {
             content = @Content(schema = @Schema(implementation = WishlistResponse.class),
                     examples = @ExampleObject(value = """
                             [
-                              { "wishlistId": 3, "productId": 5, "productName": "여름 티셔츠", "brand": "나이키", "price": 15000, "rocketDelivery": true }
+                              { "wishlistId": 3, "productId": 5, "productName": "여름 티셔츠", "imageUrl": "https://apppang-bucket.s3.ap-northeast-2.amazonaws.com/products/5/main.jpg", "brand": "나이키", "price": 15000, "rocketDelivery": true }
                             ]
                             """)))
     @GetMapping
