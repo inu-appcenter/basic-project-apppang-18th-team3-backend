@@ -18,7 +18,7 @@ import shop.apppang.domain.wishlist.service.WishlistService;
 import shop.apppang.global.exception.ErrorResponse;
 import java.util.List;
 
-@Tag(name = "찜")
+@Tag(name = "찜", description = "회원은 찜을 통해 관심 상품을 보관해두고 나중에 다시 확인")
 @RestController
 @RequestMapping("/api/wishlist")
 @RequiredArgsConstructor

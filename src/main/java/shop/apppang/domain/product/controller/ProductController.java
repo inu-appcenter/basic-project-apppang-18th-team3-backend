@@ -18,7 +18,7 @@ import shop.apppang.domain.product.dto.ProductListResponse;
 import shop.apppang.domain.product.service.ProductService;
 import shop.apppang.global.exception.ErrorResponse;
 
-@Tag(name = "상품", description = "상품 목록/상세 조회 API")
+@Tag(name = "상품", description = "비회원/회원은 카테고리·검색을 통해 자신만의 조건에 따라 상품을 탐색하고 상세 정보를 확인")
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor

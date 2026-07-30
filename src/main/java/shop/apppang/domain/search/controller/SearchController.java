@@ -27,7 +27,7 @@ import shop.apppang.domain.search.dto.SearchSuggestionResponse;
 import shop.apppang.domain.search.service.SearchService;
 import shop.apppang.global.exception.ErrorResponse;
 
-@Tag(name = "검색")
+@Tag(name = "검색", description = "회원은 검색어로 원하는 상품을 찾고, 최근 검색어를 다시 활용")
 @Validated
 @RestController
 @RequestMapping("/api")

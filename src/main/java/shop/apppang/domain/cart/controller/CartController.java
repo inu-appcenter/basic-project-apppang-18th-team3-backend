@@ -19,7 +19,7 @@ import shop.apppang.domain.cart.dto.CartUpdateRequest;
 import shop.apppang.domain.cart.service.CartService;
 import shop.apppang.global.exception.ErrorResponse;
 
-@Tag(name = "장바구니")
+@Tag(name = "장바구니", description = "회원은 구매 예정인 상품을 장바구니에 담아두고 수량을 조정")
 @RestController
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor

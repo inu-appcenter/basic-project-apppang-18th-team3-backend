@@ -16,7 +16,7 @@ import shop.apppang.domain.banner.service.BannerService;
 
 import java.util.List;
 
-@Tag(name = "배너", description = "메인 홈 배너 관련 API")
+@Tag(name = "배너", description = "메인 화면에서 프로모션·이벤트 배너를 확인")
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
