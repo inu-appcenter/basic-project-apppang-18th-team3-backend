@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import shop.apppang.domain.product.dto.ProductListResponse;
 import shop.apppang.domain.product.service.ProductService;
 import shop.apppang.global.exception.ErrorResponse;
 
+@Tag(name = "상품", description = "비회원/회원은 카테고리·검색을 통해 자신만의 조건에 따라 상품을 탐색하고 상세 정보를 확인")
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor

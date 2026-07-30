@@ -22,7 +22,7 @@ import shop.apppang.global.exception.ErrorResponse;
 
 import java.util.List;
 
-@Tag(name = "주문")
+@Tag(name = "주문", description = "회원은 장바구니 상품을 주문으로 확정하고, 결제 금액을 미리 확인하거나 주문을 취소")
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor

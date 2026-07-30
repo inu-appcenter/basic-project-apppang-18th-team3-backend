@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import shop.apppang.domain.category.dto.CategoryResponse;
 import shop.apppang.domain.category.service.CategoryService;
 
-@Tag(name = "카테고리")
+@Tag(name = "카테고리", description = "카테고리를 통해 원하는 상품군을 빠르게 탐색")
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor

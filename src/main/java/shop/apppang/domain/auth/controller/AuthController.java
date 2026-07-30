@@ -34,7 +34,7 @@ import shop.apppang.domain.auth.dto.response.SignupResponse;
 import shop.apppang.domain.auth.service.AuthService;
 import shop.apppang.global.exception.ErrorResponse;
 
-@Tag(name = "인증")
+@Tag(name = "인증", description = "회원은 가입·로그인으로 서비스를 이용하고, 비밀번호를 잊으면 본인인증을 거쳐 재설정")
 @Validated
 @RestController
 @RequestMapping("/api/auth")

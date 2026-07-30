@@ -18,7 +18,7 @@ import shop.apppang.domain.chat.dto.ChatResponse;
 import shop.apppang.domain.chat.service.ChatService;
 import shop.apppang.global.exception.ErrorResponse;
 
-@Tag(name = "챗봇")
+@Tag(name = "챗봇", description = "회원은 챗봇에게 원하는 상품을 물어보고 조건에 맞는 추천을 받음")
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor

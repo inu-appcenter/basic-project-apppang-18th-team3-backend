@@ -24,7 +24,7 @@ import shop.apppang.domain.user.service.UserService;
 import shop.apppang.domain.user.dto.response.RecentProductResponse;
 import shop.apppang.global.exception.ErrorResponse;
 
-@Tag(name = "회원")
+@Tag(name = "회원", description = "회원은 마이페이지에서 내 정보를 관리하고, 최근 찾아본 상품을 다시 확인")
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor

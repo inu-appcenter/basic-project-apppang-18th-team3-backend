@@ -20,7 +20,7 @@ import shop.apppang.domain.review.dto.ReviewListResponse;
 import shop.apppang.domain.review.service.ReviewService;
 import shop.apppang.global.exception.ErrorResponse;
 
-@Tag(name = "리뷰")
+@Tag(name = "리뷰", description = "회원은 구매한 상품에 리뷰를 남기고, 다른 회원의 리뷰를 참고해 구매를 결정")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/products")
