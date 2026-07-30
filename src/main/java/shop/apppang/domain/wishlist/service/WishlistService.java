@@ -57,11 +57,7 @@ public class WishlistService {
                 .user(user)
                 .product(product)
                 .build();
-        String imageUrl = productImageRepository.findByProductIdInAndIsMainTrue(List.of(productId)).stream()
-                .findFirst()
-                .map(ProductImageEntity::getImageUrl)
-                .orElse(null);
-        return WishlistResponse.from(wishlistRepository.save(wishlist), imageUrl);
+        return WishlistResponse.from(wishlistRepository.save(wishlist), null);
     }
 
     @Transactional

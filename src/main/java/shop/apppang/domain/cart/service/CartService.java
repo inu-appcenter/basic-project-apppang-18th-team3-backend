@@ -55,13 +55,13 @@ public class CartService {
         if (existing.isPresent()) {
             CartItemEntity item = existing.get();
             item.addQuantity(qty);                 // 합산
-            return CartItemResponse.from(item, getMainImageUrl(productId));
+            return CartItemResponse.from(item, null);
         }
         User user = em.getReference(User.class, userId);
         ProductEntity product = em.getReference(ProductEntity.class, productId);
         CartItemEntity item = CartItemEntity.builder()
                 .user(user).product(product).quantity(qty).build();
-        return CartItemResponse.from(cartRepository.save(item), getMainImageUrl(productId));
+        return CartItemResponse.from(cartRepository.save(item), null);
     }
 
     // 수량 변경
@@ -72,15 +72,7 @@ public class CartService {
         }
         CartItemEntity item = findMyCartItem(userId, cartItemId);
         item.changeQuantity(quantity);
-        return CartItemResponse.from(item, getMainImageUrl(item.getProduct().getId()));
-    }
-
-    // 대표 이미지 단건 조회 (없으면 null)
-    private String getMainImageUrl(Long productId) {
-        return productImageRepository.findByProductIdInAndIsMainTrue(List.of(productId)).stream()
-                .findFirst()
-                .map(ProductImageEntity::getImageUrl)
-                .orElse(null);
+        return CartItemResponse.from(item, null);
     }
 
     // 삭제
