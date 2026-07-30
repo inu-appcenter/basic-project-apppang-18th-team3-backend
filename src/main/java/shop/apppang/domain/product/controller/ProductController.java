@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +18,7 @@ import shop.apppang.domain.product.dto.ProductListResponse;
 import shop.apppang.domain.product.service.ProductService;
 import shop.apppang.global.exception.ErrorResponse;
 
+@Tag(name = "상품", description = "상품 목록/상세 조회 API")
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
