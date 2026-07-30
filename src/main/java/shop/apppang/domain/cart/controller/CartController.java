@@ -35,7 +35,7 @@ public class CartController {
                               "itemCount": 1,
                               "totalPrice": 24000,
                               "items": [
-                                { "cartItemId": 10, "productId": 5, "productName": "여름 티셔츠", "price": 12000, "quantity": 2, "subtotal": 24000 }
+                                { "cartItemId": 10, "productId": 5, "productName": "여름 티셔츠", "imageUrl": "https://apppang-bucket.s3.ap-northeast-2.amazonaws.com/products/5/main.jpg", "price": 12000, "quantity": 2, "subtotal": 24000 }
                               ]
                             }
                             """)))
