@@ -7,23 +7,41 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import shop.apppang.domain.product.entity.ProductEntity;
+import shop.apppang.domain.product.entity.ProductImageEntity;
+import shop.apppang.domain.product.repository.ProductImageRepository;
 import shop.apppang.domain.user.entity.User;
 import shop.apppang.domain.wishlist.dto.WishlistResponse;
 import shop.apppang.domain.wishlist.entity.WishlistEntity;
 import shop.apppang.domain.wishlist.repository.WishlistRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class WishlistService {
 
     private final WishlistRepository wishlistRepository;
+    private final ProductImageRepository productImageRepository;
     private final EntityManager em;
 
     @Transactional(readOnly = true)
     public List<WishlistResponse> getWishlist(Long userId) {
-        return wishlistRepository.findByUser_Id(userId).stream()
-                .map(WishlistResponse::from)
+        List<WishlistEntity> wishlists = wishlistRepository.findByUser_Id(userId);
+        List<Long> productIds = wishlists.stream()
+                .map(w -> w.getProduct().getId())
+                .distinct()
+                .toList();
+        Map<Long, String> mainImageMap = productIds.isEmpty()
+                ? Map.of()
+                : productImageRepository.findByProductIdInAndIsMainTrue(productIds).stream()
+                        .collect(Collectors.toMap(
+                                img -> img.getProduct().getId(),
+                                ProductImageEntity::getImageUrl,
+                                (existing, replacement) -> existing
+                        ));
+        return wishlists.stream()
+                .map(w -> WishlistResponse.from(w, mainImageMap.get(w.getProduct().getId())))
                 .toList();
     }
 
@@ -39,7 +57,11 @@ public class WishlistService {
                 .user(user)
                 .product(product)
                 .build();
-        return WishlistResponse.from(wishlistRepository.save(wishlist));
+        String imageUrl = productImageRepository.findByProductIdInAndIsMainTrue(List.of(productId)).stream()
+                .findFirst()
+                .map(ProductImageEntity::getImageUrl)
+                .orElse(null);
+        return WishlistResponse.from(wishlistRepository.save(wishlist), imageUrl);
     }
 
     @Transactional
